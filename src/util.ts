@@ -1,5 +1,7 @@
 import { transform } from "chessops/pgn";
-import { PgnNodeData } from "chessops/pgn";
+import { PgnNodeData, Node } from "chessops/pgn";
+
+
 
 interface Context {
 	clone(): Context;
@@ -19,6 +21,6 @@ const markUnseen = (ctx: Context, data, childIndex) => {
 	};
 };
 
-export const initializeTraining = (head: Node) => {
+export const initializeTraining = (head: Node<PgnNodeData>) => {
     return transform(head, context, markUnseen);
 }
