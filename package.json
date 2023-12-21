@@ -1,0 +1,29 @@
+{
+  "name": "chess-srs",
+  "version": "1.0.0",
+  "description": "Library to train chess openings with spaced repetition",
+  "main": "index.js",
+  "scripts": {
+    "watch": "node .build/watch.js",
+    "dev": "node dist/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacokyle01/chess-srs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jacokyle01/chess-srs/issues"
+  },
+  "homepage": "https://github.com/jacokyle01/chess-srs#readme",
+  "dependencies": {
+    "chessops": "^0.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "esbuild": "^0.19.10",
+    "typescript": "^5.3.3"
+  }
+}
