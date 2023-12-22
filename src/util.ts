@@ -24,3 +24,27 @@ const markUnseen = (ctx: Context, data, childIndex) => {
 export const initializeTraining = (head: Node<PgnNodeData>) => {
     return transform(head, context, markUnseen);
 }
+
+interface PathContext {
+	path: string;
+	clone(): PathContext;
+}
+
+const pathContext: PathContext = {
+	path: "",
+	clone() {
+		const clonedCtx: PathContext = { ...this };
+		return clonedCtx;
+	},
+};
+
+export const annotateWithPaths = (node: Node<PgnNodeData>) => {
+    return transform(node, pathContext, (pathContext, node) => {
+        const san = node.san;
+        pathContext.path += " " + san;
+        return {
+            ...node,
+            pathToHere: pathContext.path,
+        };
+    })
+}
