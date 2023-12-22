@@ -17,7 +17,10 @@ const context: Context = {
 const markUnseen = (ctx: Context, data, childIndex) => {
 	return {
 		...data,
-		comments: data.comments ? data.comments + "/*unseen,0*/" : "/*unseen,0*/",
+		training: {
+            group: "unseen",
+            dueAt: Infinity
+        }
 	};
 };
 
