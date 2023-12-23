@@ -26,11 +26,17 @@ export function start(state: State): Api {
         },
         setRepertoire: (pgn: string) => {
             const games = parsePgn(pgn);
-            const annotated: Game<PgnNodeData>[] = [];
+            const annotated: Game<TrainingData>[] = [];
             for (const game of games) {
                 game.moves = initializeTraining(game.moves);
+                const annotatedGame = {
+                    ...game,
+                    moves: initializeTraining(game.moves)
+                }
+                annotated.push(annotatedGame);
             }
-            state.repertoire = games;
+            state.repertoire = annotated;
+            return true; //dont validate yet
         },
         getRepertoire: () => {
             return state.repertoire;
