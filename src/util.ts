@@ -1,7 +1,15 @@
-import { Game, transform, walk } from "chessops/pgn";
-import { PgnNodeData, Node, ChildNode } from "chessops/pgn";
+import { Game, transform} from "chessops/pgn";
+import { PgnNodeData, Node, ChildNode, walk } from "chessops/pgn";
 
+export interface TrainingData extends PgnNodeData {
+	training: {
+		seen: boolean,
+		group: string,
+		dueAt: number
+	}
+}
 
+export type Method = "recall" | "train";
 
 interface Context {
 	clone(): Context;
@@ -14,7 +22,7 @@ const context: Context = {
 	},
 };
 
-const markUnseen = (ctx: Context, data, childIndex) => {
+const markUnseen = (ctx: Context, data) => {
 	return {
 		...data,
 		training: {
@@ -22,6 +30,7 @@ const markUnseen = (ctx: Context, data, childIndex) => {
             dueAt: Infinity
         }
 	};
+
 };
 
 export const initializeTraining = (head: Node<PgnNodeData>) => {
@@ -58,17 +67,17 @@ export const transformNode = (subrep: Game<PgnNodeData>, path: string, f: (targe
 	console.log(steps);
 	console.log(subrep.moves.children.find(child => child.data.san == steps[0])); 
 
-	let current: ChildNode<PgnNodeData> | undefined;
-	current = subrep.moves.children.find(child => child.data.san == steps[0])
+	let current = subrep.moves.children.find(child => child.data.san == steps[0])
 	for (let i = 1; i < steps.length; i++) {
 		const step = steps[i];
 		current = current?.children.find(child => child.data.san == step);
 	}	
-	// current.data = f(current);
+	current = current as ChildNode<PgnNodeData>
 	current.data = f(current);
 	console.log(current.data.san);
 	console.log(subrep.moves.children[0].children[0].children[0])
 }
+//example usage: 
 
 // const callback = (target: Node<PgnNodeData>) => {
 // 	console.log("test");
@@ -79,3 +88,22 @@ export const transformNode = (subrep: Game<PgnNodeData>, path: string, f: (targe
 // 		}
 // 	}
 // }
+
+
+const checker = (data) => {
+	console.log(JSON.stringify(data));
+	return data.training.group == "unseen";
+}
+
+//get nodes such that f(node) = true 
+export const getNodesAsList = (head: Node<TrainingData>): Node<TrainingData>[] => {
+	let nodes: Node<TrainingData>[] = [];
+	walk(head, context, (context, data) => {
+		if (checker(data)) {
+			nodes.push(data);
+		}	
+	})
+	return nodes;
+}
+
+
