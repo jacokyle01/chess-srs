@@ -9,7 +9,9 @@ export interface TrainingData extends PgnNodeData {
 	}
 }
 
-export type Method = "recall" | "train";
+
+
+export type Method = "recall" | "learn";
 
 interface Context {
 	clone(): Context;
@@ -42,7 +44,7 @@ interface PathContext {
 	clone(): PathContext;
 }
 
-const pathContext: PathContext = {
+export const pathContext: PathContext = {
 	path: "",
 	clone() {
 		const clonedCtx: PathContext = { ...this };
@@ -91,7 +93,6 @@ export const transformNode = (subrep: Game<PgnNodeData>, path: string, f: (targe
 
 
 const checker = (data) => {
-	console.log(JSON.stringify(data));
 	return data.training.group == "unseen";
 }
 
