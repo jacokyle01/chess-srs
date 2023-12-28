@@ -1,11 +1,16 @@
 import { PgnNodeData, Node, Game } from "chessops/pgn";
-import { TrainingData } from "./util";
+import { Method, TrainingData } from "./util";
 
 export interface State {
+    at: number //which position of training order we're at
     count: number;
     currentNode: Node<TrainingData> | null;
+    groups: number[] //how long we should wait before training. see "leitner system"
+    method: Method
     repertoire: Game<TrainingData>[];
-    subrepertoire: Game<TrainingData>;
+    subrepertoire: Game<PgnNodeData>;
     time: number;
     trainingOrder: Node<TrainingData>[] | null; //obtain this by filtering the subrepertoire tree
+    queue: Node<PgnNodeData>[][]; //a list of paths 
+
 }

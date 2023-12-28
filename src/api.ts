@@ -1,15 +1,18 @@
-import { Game, PgnNodeData, parsePgn } from "chessops/pgn";
+import { Game, PgnNodeData, parsePgn, Node } from "chessops/pgn";
 import { State } from "./state";
-import { TrainingData, initializeTraining } from "./util";
+import { Method, TrainingData, initializeTraining } from "./util";
 
 export interface Api {
     sayHello(): void;
     sayNumber(): void
     initialize(k: number): void; //load kth subrepertoire into 'TrainingOrder'. all nodes will be unseen
-    load(k: number): void; //load kth subreperoire into `TrainingOrder` 
-    setTime(time: number): boolean //set time of state. boolean: whether or not this new time is different 
+    load(k: number): void; //begin training kth subrepertoire
+    setTime(time: number): boolean //set time of state. boolean: whether or not this new time is different
+    setMethod(method: Method);
     setRepertoire(pgn: string): boolean //load repertoire into memory, annotates as unseen. boolean: whether not this was a valid PGN
     getRepertoire(): Game<PgnNodeData>[];
+    getNext(): Node<PgnNodeData>[]; //get next training path, which is a list of nodes that lead to a trainable position
+    // doTrain(action: Action) this --> a bunch of switch statements?
 }
 
 
@@ -40,6 +43,30 @@ export function start(state: State): Api {
         },
         getRepertoire: () => {
             return state.repertoire;
+        },
+        setMethod: (method: Method) => {
+            this.method = method;
+        },
+        getNext: () => {
+            //we need to follow the ordering & only consider nodes that are trainable in our context
+            let queue = state.queue;
+            if (queue.length == 0) {
+                //add all subrepertoire moves 
+                for (const child of state.subrepertoire.moves.children) {
+                    queue.push([child]);
+                }
+            }
+
+            const path = queue.shift();
+            const parent = path?.at(-1);
+            for (const child of parent.children) {
+                queue.push([...path, child])
+            }
+            return path;
+
+        },
+        load: (k: number) => {
+            state.subrepertoire = state.repertoire[k];
         }
     }
 }
