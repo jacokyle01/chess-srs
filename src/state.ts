@@ -8,9 +8,9 @@ export interface State {
     groups: number[] //how long we should wait before training. see "leitner system"
     method: Method
     repertoire: Game<TrainingData>[];
-    subrepertoire: Game<PgnNodeData>;
+    subrepertoire: Game<TrainingData>;
     time: number;
     trainingOrder: Node<TrainingData>[] | null; //obtain this by filtering the subrepertoire tree
-    queue: Node<PgnNodeData>[][]; //a list of paths 
+    queue: Node<TrainingData>[][]; //a list of paths 
 
 }

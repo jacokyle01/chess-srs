@@ -10,8 +10,8 @@ export interface Api {
     setTime(time: number): boolean //set time of state. boolean: whether or not this new time is different
     setMethod(method: Method);
     setRepertoire(pgn: string): boolean //load repertoire into memory, annotates as unseen. boolean: whether not this was a valid PGN
-    getRepertoire(): Game<PgnNodeData>[];
-    getNext(): Node<PgnNodeData>[]; //get next training path, which is a list of nodes that lead to a trainable position
+    getRepertoire(): Game<TrainingData>[];
+    getNext(): Node<TrainingData>[]; //get next training path, which is a list of nodes that lead to a trainable position
     // doTrain(action: Action) this --> a bunch of switch statements?
 }
 
