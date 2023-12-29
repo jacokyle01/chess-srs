@@ -11,8 +11,8 @@ export interface Api {
 	setMethod(method: Method);
 	setRepertoire(pgn: string): boolean; //load repertoire into memory, annotates as unseen. boolean: whether not this was a valid PGN
 	getRepertoire(): Game<TrainingData>[];
-	getNext(): Node<TrainingData>[] | null; //get next training path, which is a list of nodes that lead to a trainable position
-	// doTrain(action: Action) this --> a bunch of switch statements?
+	next(): boolean; //advance trainer to next path returns whether or not there was another trainable path
+	path(): ChildNode<TrainingData>[] | null; //get the current path
 }
 
 export function start(state: State): Api {
@@ -46,7 +46,7 @@ export function start(state: State): Api {
 		setMethod: (method: Method) => {
 			this.method = method;
 		},
-		getNext: () => {
+		next: () => {
 
             //TODO refactor -more clear logic, dont use recursion
 			//we need to follow the ordering & only consider nodes that are trainable in our context
@@ -71,17 +71,22 @@ export function start(state: State): Api {
 				}
                 //TODO add switch statement here to change targeting logic based on `method`
                 if (parent.data.training.group == "unseen") {
-                    return path;
+					state.path = path;
+                    return true;
                 }
 			}
             if (!flag) {
                 return this.getNext(); //if we didnt start from an empty queue, search again from start 
             }
-            return null; //no trainable nodes
+			this.path = null;
+			return false;
 
 		},
 		load: (k: number) => {
 			state.subrepertoire = state.repertoire[k];
 		},
+		path: () => { 
+			return state.path;
+		}
 	};
 }
