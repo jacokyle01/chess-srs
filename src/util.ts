@@ -107,4 +107,13 @@ export const getNodesAsList = (head: Node<TrainingData>): Node<TrainingData>[] =
 	return nodes;
 }
 
+//debug
+//print path as string of SANs
+export const printPath = (path: ChildNode<TrainingData>[]): void => { 
+	let string = "";
+	for (const step of path) {
+		string += step.data.san + " ";
+	}
+	console.log(string);
+}
 
