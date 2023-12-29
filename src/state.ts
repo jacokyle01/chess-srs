@@ -1,4 +1,4 @@
-import { PgnNodeData, Node, Game } from "chessops/pgn";
+import { PgnNodeData, Node, Game, ChildNode } from "chessops/pgn";
 import { Method, TrainingData } from "./util";
 
 export interface State {
@@ -11,6 +11,6 @@ export interface State {
     subrepertoire: Game<TrainingData>;
     time: number;
     trainingOrder: Node<TrainingData>[] | null; //obtain this by filtering the subrepertoire tree
-    queue: Node<TrainingData>[][]; //a list of paths 
+    queue: ChildNode<TrainingData>[][]; //a list of paths 
 
 }

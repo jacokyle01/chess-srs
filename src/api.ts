@@ -1,4 +1,4 @@
-import { Game, PgnNodeData, parsePgn, Node } from "chessops/pgn";
+import { Game, PgnNodeData, parsePgn, Node, ChildNode } from "chessops/pgn";
 import { State } from "./state";
 import { Method, TrainingData, initializeTraining } from "./util";
 
@@ -61,14 +61,15 @@ export function start(state: State): Api {
 				}
 			}
 
-            let path: Node<TrainingData>[];
-            let parent: Node<TrainingData>;
+            let path: ChildNode<TrainingData>[];
+            let parent: ChildNode<TrainingData>;
 			while (queue.length > 0) {
                 path = queue.shift();
                 parent = path?.at(-1); 
 				for (const child of parent.children) {
 					queue.push([...path, child]);
 				}
+                //TODO add switch statement here to change targeting logic based on `method`
                 if (parent.data.training.group == "unseen") {
                     return path;
                 }
