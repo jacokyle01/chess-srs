@@ -2,15 +2,45 @@ import { PgnNodeData, Node, Game, ChildNode } from "chessops/pgn";
 import { Method, TrainingData } from "./util";
 
 export interface State {
-    count: number;
     currentNode: Node<TrainingData> | null;
-    groups: number[] //how long we should wait before training. see "leitner system"
-    method: Method
+    method: Method //recall or learn 
+    learn: { //when variation is unsee 
+        by: "depth" | "breadth" //how we find the next variation
+        max: number //dont look at variations after this many moves 
+    }
+    recall: { //after a variation has already been seen
+        by: "depth" | "breadth"
+        max: number
+    }
+    buckets: number[] //the "spaces" for spaced repetition. see "leitner system"
+    promotion: "most" | "next" //on recall success, 
+    demotion: "most" | "next"
     path: ChildNode<TrainingData>[] | null; //current path we are training
-    repertoire: Game<TrainingData>[];
-    subrepertoire: Game<TrainingData>;
+    repertoire: Game<TrainingData>[] | null; 
+    subrepertoire: Game<TrainingData> | null;
     time: number;
-    trainingOrder: Node<TrainingData>[] | null; //obtain this by filtering the subrepertoire tree
     queue: ChildNode<TrainingData>[][]; //a list of paths 
+}
 
+export function defaults(): State {
+    return {
+        currentNode: null,
+        method: "learn",
+        learn: {
+            by: "breadth",
+            max: Infinity
+        },
+        recall: {
+            by: "depth",
+            max: Infinity
+        },
+        buckets: [30, 86400, 259200, 604800, 1814400, 5443200, 16329600, 31536000], //30 seconds, 24 hours, 3 days, 7 days, 3 weeks, 9 weeks, 27 weeks, 1 year 
+        promotion: "next",
+        demotion: "next",
+        path: null,
+        repertoire: null,
+        subrepertoire: null,
+        time: Date.now(),
+        queue: []
+    }
 }
