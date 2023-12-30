@@ -4,7 +4,7 @@ import { PgnNodeData, Node, ChildNode, walk } from "chessops/pgn";
 export interface TrainingData extends PgnNodeData {
 	training: {
 		seen: boolean,
-		group: string,
+		group: number,
 		dueAt: number
 	}
 }
@@ -28,7 +28,8 @@ const markUnseen = (ctx: Context, data) => {
 	return {
 		...data,
 		training: {
-            group: "unseen",
+			seen: false,
+            group: -1,
             dueAt: Infinity
         }
 	};

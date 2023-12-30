@@ -3,9 +3,6 @@ import { State } from "./state";
 import { Method, TrainingData, initializeTraining } from "./util";
 
 export interface Api {
-	sayHello(): void;
-	sayNumber(): void;
-	initialize(k: number): void; //load kth subrepertoire into 'TrainingOrder'. all nodes will be unseen
 	load(k: number): void; //begin training kth subrepertoire
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
 	setMethod(method: Method);
@@ -18,8 +15,6 @@ export interface Api {
 
 export function start(state: State): Api {
 	return {
-		sayHello: () => console.log("hello"),
-		sayNumber: () => console.log(state.count),
 		setTime: (time: number) => {
 			if (state.time == time) {
 				state.time = time;
@@ -71,7 +66,7 @@ export function start(state: State): Api {
 					queue.push([...path, child]);
 				}
                 //TODO add switch statement here to change targeting logic based on `method`
-                if (parent.data.training.group == "unseen") {
+                if (!parent.data.training.seen) {
 					state.path = path;
                     return true;
                 }
@@ -90,8 +85,15 @@ export function start(state: State): Api {
 			return state.path;
 		},
 		succeed: () => {
-			if (state.path == null) return;
-			state.path.at(-1).data.training.group = "seen";
+			switch(state.method) {
+				case "recall":
+					break;
+				case "learn":
+					if (state.path == null) return;
+					let node = state.path.at(-1);
+					node.data.training.seen = true;
+					break;
+			}
 		}
 	};
 }
