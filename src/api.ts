@@ -13,6 +13,7 @@ export interface Api {
 	getRepertoire(): Game<TrainingData>[];
 	next(): boolean; //advance trainer to next path returns whether or not there was another trainable path
 	path(): ChildNode<TrainingData>[] | null; //get the current path
+	succeed(): void; //handle training success based on context
 }
 
 export function start(state: State): Api {
@@ -87,6 +88,10 @@ export function start(state: State): Api {
 		},
 		path: () => { 
 			return state.path;
+		},
+		succeed: () => {
+			if (state.path == null) return;
+			state.path.at(-1).data.training.group = "seen";
 		}
 	};
 }
