@@ -1,7 +1,8 @@
 import { Api, start } from "./api";
-import { State } from "./state";
+import { Config } from "./config";
+import { State, defaults } from "./state";
 
-export function ChessSrs(config: State): Api {
-	const state = { ...config, method: "learn", queue: [] };
+export function ChessSrs(config?: Config): Api {
+	const state = defaults();
 	return start(state);
 }
