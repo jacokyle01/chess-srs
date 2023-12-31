@@ -11,6 +11,7 @@ export interface Api {
 	next(): boolean; //advance trainer to next path returns whether or not there was another trainable path
 	path(): ChildNode<TrainingData>[] | null; //get the current path
 	succeed(): void; //handle training success based on context
+	fail(): void; //handle training fail based on context
 	update(): void //set current time
 }
 
@@ -120,6 +121,23 @@ export function start(state: State): Api {
 		},
 		update: () => {
 			state.time = Math.round(Date.now() / 1000);
+		},
+		fail: () => {
+			let node = state?.path?.at(-1);
+			if (!node) return;
+			switch(state.method) {
+				case "recall":
+					switch(state.demotion) {
+						case "most":
+							break;
+						case "next":
+							node.data.training.group = Math.max(node.data.training.group - 1, 0);
+							const space = state.buckets[node.data.training.group];
+							node.data.training.dueAt = state.time + space;
+					}
+				case "learn":
+					break; //can't fail learning
+			}
 		}
 		
 	};
