@@ -40,7 +40,7 @@ export function defaults(): State {
         path: null,
         repertoire: null,
         subrepertoire: null,
-        time: Date.now(),
+        time: Math.round(Date.now() / 1000),
         queue: []
     }
 }

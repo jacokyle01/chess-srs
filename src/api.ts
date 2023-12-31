@@ -5,12 +5,13 @@ import { Method, TrainingData, initializeTraining } from "./util";
 export interface Api {
 	load(k: number): void; //begin training kth subrepertoire
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
-	setMethod(method: Method);
+	setMethod(method: Method): void;
 	setRepertoire(pgn: string): boolean; //load repertoire into memory, annotates as unseen. boolean: whether not this was a valid PGN
 	getRepertoire(): Game<TrainingData>[];
 	next(): boolean; //advance trainer to next path returns whether or not there was another trainable path
 	path(): ChildNode<TrainingData>[] | null; //get the current path
 	succeed(): void; //handle training success based on context
+	update(): void //set current time
 }
 
 export function start(state: State): Api {
@@ -40,7 +41,9 @@ export function start(state: State): Api {
 			return state.repertoire;
 		},
 		setMethod: (method: Method) => {
-			this.method = method;
+			state.method = method;
+			state.queue = [];
+			state.path = null;
 		},
 		next: () => {
 
@@ -65,11 +68,20 @@ export function start(state: State): Api {
 				for (const child of parent.children) {
 					queue.push([...path, child]);
 				}
-                //TODO add switch statement here to change targeting logic based on `method`
-                if (!parent.data.training.seen) {
-					state.path = path;
-                    return true;
-                }
+				switch(state.method) {
+					case "recall": //recall if due 
+						if (parent.data.training.dueAt <= state.time) {
+							state.path = path;
+							return true;
+						}
+						break;
+					case "learn": //learn if unseen 
+						if (!parent.data.training.seen) {
+							state.path = path;
+							return true;
+						}
+						break;
+				}
 			}
             if (!flag) {
                 return this.getNext(); //if we didnt start from an empty queue, search again from start 
@@ -85,15 +97,30 @@ export function start(state: State): Api {
 			return state.path;
 		},
 		succeed: () => {
+			let node = state?.path?.at(-1);
+			if (!node) return;
 			switch(state.method) {
 				case "recall":
+					switch(state.promotion) {
+						case "most":
+							break;
+						case "next":
+							node.data.training.group = Math.min(node.data.training.group + 1, state.buckets.length - 1);
+							const space = state.buckets[node.data.training.group];
+							node.data.training.dueAt = state.time + space;
+							break;
+					}
 					break;
 				case "learn":
-					if (state.path == null) return;
-					let node = state.path.at(-1);
 					node.data.training.seen = true;
+					node.data.training.dueAt = state.time + state.buckets[0];
+					node.data.training.group = 0;
 					break;
 			}
+		},
+		update: () => {
+			state.time = Math.round(Date.now() / 1000);
 		}
+		
 	};
 }
