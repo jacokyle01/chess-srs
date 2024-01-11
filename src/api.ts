@@ -1,6 +1,6 @@
 import { Game, PgnNodeData, parsePgn, Node, ChildNode } from "chessops/pgn";
 import { State } from "./state";
-import { Color, Method, TrainingData, initializeTraining } from "./util";
+import { Color, Method, QueueEntry, TrainingData, initializeTraining } from "./util";
 
 export interface Api {
 	addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
@@ -74,28 +74,36 @@ export function start(state: State): Api {
 				flag = true;
 				//add all subrepertoire moves
 				for (const child of state.subrepertoire.moves.children) {
-					queue.push([child]);
+					const queueEntry: QueueEntry = {
+						path: [child],
+						layer: 0
+					}
+					queue.push(queueEntry);
 				}
 			}
 
             let path: ChildNode<TrainingData>[];
             let parent: ChildNode<TrainingData>;
 			while (queue.length > 0) {
-                path = queue.shift();
-                parent = path?.at(-1); 
+                const entry: QueueEntry = queue.shift();
+                parent = entry.path?.at(-1); 
 				for (const child of parent.children) {
-					queue.push([...path, child]);
+					const queueEntry: QueueEntry = {
+						path: [...entry.path, child],
+						layer: ++entry.layer
+					}
+					queue.push(queueEntry);
 				}
 				switch(state.method) {
 					case "recall": //recall if due 
 						if (parent.data.training.dueAt <= state.time) {
-							state.path = path;
+							state.path = entry.path;
 							return true;
 						}
 						break;
 					case "learn": //learn if unseen 
 						if (!parent.data.training.seen) {
-							state.path = path;
+							state.path = entry.path;
 							return true;
 						}
 						break;
@@ -112,6 +120,7 @@ export function start(state: State): Api {
 			state.subrepertoire = state.repertoire[k];
 		},
 		path: () => { 
+			// return state.path;
 			return state.path;
 		},
 		succeed: () => {

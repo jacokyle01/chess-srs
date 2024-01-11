@@ -1,5 +1,5 @@
 import { PgnNodeData, Node, Game, ChildNode } from "chessops/pgn";
-import { Method, TrainingData } from "./util";
+import { Method, QueueEntry, TrainingData } from "./util";
 
 export interface State {
     currentNode: Node<TrainingData> | null;
@@ -19,7 +19,7 @@ export interface State {
     repertoire: Game<TrainingData>[]; 
     subrepertoire: Game<TrainingData> | null;
     time: number;
-    queue: ChildNode<TrainingData>[][]; //a list of paths 
+    queue: QueueEntry[]; //a list of paths 
 }
 
 export function defaults(): State {

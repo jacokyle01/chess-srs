@@ -13,6 +13,11 @@ export type Color = "white" | "black";
 
 export type Method = "recall" | "learn";
 
+export interface QueueEntry {
+	path: ChildNode<TrainingData>[];
+	layer: number
+}
+
 interface Context {
 	clone(): Context;
 }
