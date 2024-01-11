@@ -16,7 +16,7 @@ export interface State {
     promotion: "most" | "next" //on recall success, 
     demotion: "most" | "next"
     path: ChildNode<TrainingData>[] | null; //current path we are training
-    repertoire: Game<TrainingData>[] | null; 
+    repertoire: Game<TrainingData>[]; 
     subrepertoire: Game<TrainingData> | null;
     time: number;
     queue: ChildNode<TrainingData>[][]; //a list of paths 
@@ -38,7 +38,7 @@ export function defaults(): State {
         promotion: "next",
         demotion: "next",
         path: null,
-        repertoire: null,
+        repertoire: [],
         subrepertoire: null,
         time: Math.round(Date.now() / 1000),
         queue: []

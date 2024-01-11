@@ -7,7 +7,6 @@ export interface Api {
 	load(k: number): void; //begin training kth subrepertoire
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
 	setMethod(method: Method): void; //set training method. learn or recall
-	setRepertoire(pgn: string): boolean; //load repertoire into memory, annotates as unseen. boolean: whether not this was a valid PGN
 	getRepertoire(): Game<TrainingData>[];
 	next(): boolean; //advance trainer to next path returns whether or not there was another trainable path
 	path(): ChildNode<TrainingData>[] | null; //get the current path
@@ -28,6 +27,7 @@ export function start(state: State): Api {
 				};
 				state.repertoire.push(annotatedGame);
 			}
+			return true;
 		},
 
 		setTime: (time: number) => {
@@ -37,20 +37,20 @@ export function start(state: State): Api {
 			}
 			return false;
 		},
-		setRepertoire: (pgn: string) => {
-			const games = parsePgn(pgn);
-			const annotated: Game<TrainingData>[] = [];
-			for (const game of games) {
-				game.moves = initializeTraining(game.moves);
-				const annotatedGame = {
-					...game,
-					moves: initializeTraining(game.moves),
-				};
-				annotated.push(annotatedGame);
-			}
-			state.repertoire = annotated;
-			return true; //dont validate yet
-		},
+		// setRepertoire: (pgn: string) => {
+		// 	const games = parsePgn(pgn);
+		// 	const annotated: Game<TrainingData>[] = [];
+		// 	for (const game of games) {
+		// 		game.moves = initializeTraining(game.moves);
+		// 		const annotatedGame = {
+		// 			...game,
+		// 			moves: initializeTraining(game.moves),
+		// 		};
+		// 		annotated.push(annotatedGame);
+		// 	}
+		// 	state.repertoire = annotated;
+		// 	return true; //dont validate yet
+		// },
 		getRepertoire: () => {
 			return state.repertoire;
 		},
