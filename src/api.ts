@@ -7,7 +7,7 @@ export interface Api {
 	load(k: number): void; //begin training kth subrepertoire
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
 	setMethod(method: Method): void; //set training method. learn or recall
-	getRepertoire(): Game<TrainingData>[];
+	state(): State; //get the state of this instance
 	next(): boolean; //advance trainer to next path returns whether or not there was another trainable path
 	path(): ChildNode<TrainingData>[] | null; //get the current path
 	succeed(): void; //handle training success based on context
@@ -51,8 +51,8 @@ export function start(state: State): Api {
 		// 	state.repertoire = annotated;
 		// 	return true; //dont validate yet
 		// },
-		getRepertoire: () => {
-			return state.repertoire;
+		state: () => {
+			return state;
 		},
 		setMethod: (method: Method) => {
 			state.method = method;
