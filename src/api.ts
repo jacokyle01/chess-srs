@@ -3,9 +3,10 @@ import { State } from "./state";
 import { Method, TrainingData, initializeTraining } from "./util";
 
 export interface Api {
+	addSubrepertoires(pgn: string): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
 	load(k: number): void; //begin training kth subrepertoire
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
-	setMethod(method: Method): void;
+	setMethod(method: Method): void; //set training method. learn or recall
 	setRepertoire(pgn: string): boolean; //load repertoire into memory, annotates as unseen. boolean: whether not this was a valid PGN
 	getRepertoire(): Game<TrainingData>[];
 	next(): boolean; //advance trainer to next path returns whether or not there was another trainable path
@@ -17,6 +18,18 @@ export interface Api {
 
 export function start(state: State): Api {
 	return {
+		addSubrepertoires: (pgn: string) => {
+			const subreps= parsePgn(pgn);
+			for (const subrep of subreps) {
+				subrep.moves = initializeTraining(subrep.moves);
+				const annotatedGame = {
+					...subrep,
+					moves: initializeTraining(subrep.moves),
+				};
+				state.repertoire.push(annotatedGame);
+			}
+		},
+
 		setTime: (time: number) => {
 			if (state.time == time) {
 				state.time = time;
