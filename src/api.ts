@@ -1,9 +1,9 @@
 import { Game, PgnNodeData, parsePgn, Node, ChildNode } from "chessops/pgn";
 import { State } from "./state";
-import { Method, TrainingData, initializeTraining } from "./util";
+import { Color, Method, TrainingData, initializeTraining } from "./util";
 
 export interface Api {
-	addSubrepertoires(pgn: string): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
+	addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
 	load(k: number): void; //begin training kth subrepertoire
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
 	setMethod(method: Method): void; //set training method. learn or recall
@@ -17,15 +17,19 @@ export interface Api {
 
 export function start(state: State): Api {
 	return {
-		addSubrepertoires: (pgn: string) => {
+		addSubrepertoires: (pgn: string, color: Color) => {
 			const subreps= parsePgn(pgn);
 			for (const subrep of subreps) {
-				subrep.moves = initializeTraining(subrep.moves);
-				const annotatedGame = {
+				//augment subrepertoire with a) color to train as, and b) training data 
+				const annotatedSubrep = {
 					...subrep,
+					headers: {
+						...subrep.headers,
+						"TrainAs": color
+					},
 					moves: initializeTraining(subrep.moves),
 				};
-				state.repertoire.push(annotatedGame);
+				state.repertoire.push(annotatedSubrep);
 			}
 			return true;
 		},

@@ -9,7 +9,7 @@ export interface TrainingData extends PgnNodeData {
 	}
 }
 
-
+export type Color = "white" | "black";
 
 export type Method = "recall" | "learn";
 
