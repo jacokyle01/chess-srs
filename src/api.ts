@@ -94,6 +94,12 @@ export function start(state: State): Api {
 					}
 					queue.push(queueEntry);
 				}
+				//only train paths of the correct color
+				const color = state.subrepertoire?.headers.TrainAs
+				const layer = entry.layer;
+				const even = layer % 2 == 0;
+
+				if ((color == "white" && !even) || (color == "black" && even))
 				switch(state.method) {
 					case "recall": //recall if due 
 						if (parent.data.training.dueAt <= state.time) {
