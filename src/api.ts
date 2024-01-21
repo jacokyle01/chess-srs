@@ -1,14 +1,15 @@
 import { Game, PgnNodeData, parsePgn, Node, ChildNode } from "chessops/pgn";
 import { State } from "./state";
-import { Color, Method, QueueEntry, TrainingData, initializeTraining } from "./util";
+import { Color, Method, QueueEntry, TrainingData, TrainingOutcome, initializeSubrepertoire, initializeTraining } from "./util";
 
 export interface Api {
 	addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
 	load(k: number): void; //begin training kth subrepertoire
+	guess(san: string): TrainingOutcome; //guess the move this path is trying to train
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
 	setMethod(method: Method): void; //set training method. learn or recall
 	state(): State; //get the state of this instance
-	next(): boolean; //advance trainer to next path returns whether or not there was another trainable path
+	next(): boolean; //advance trainer to next path. returns whether or not there was another trainable path
 	path(): ChildNode<TrainingData>[] | null; //get the current path
 	succeed(): void; //handle training success based on context
 	fail(): void; //handle training fail based on context
@@ -27,7 +28,7 @@ export function start(state: State): Api {
 						...subrep.headers,
 						"TrainAs": color
 					},
-					moves: initializeTraining(subrep.moves),
+					moves: initializeSubrepertoire(subrep.moves, color),
 				};
 				state.repertoire.push(annotatedSubrep);
 			}
@@ -94,12 +95,6 @@ export function start(state: State): Api {
 					}
 					queue.push(queueEntry);
 				}
-				//only train paths of the correct color
-				const color = state.subrepertoire?.headers.TrainAs
-				const layer = entry.layer;
-				const even = layer % 2 == 0;
-
-				if ((color == "white" && !even) || (color == "black" && even))
 				switch(state.method) {
 					case "recall": //recall if due 
 						if (parent.data.training.dueAt <= state.time) {
@@ -128,6 +123,14 @@ export function start(state: State): Api {
 		path: () => { 
 			// return state.path;
 			return state.path;
+		},
+		guess: (san: string) => {
+			if (!state.path || state.method == "learn") return;
+			console.log(state.path.at(-1)?.data.san)
+			if (san == state.path.at(-1)?.data.san) {
+				return "success";
+			}
+
 		},
 		succeed: () => {
 			let node = state?.path?.at(-1);
