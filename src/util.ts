@@ -6,12 +6,14 @@ interface TrainingContext {
 	//TODO add depth context
 	//TODO add context to only train first child
 	trainable: boolean
+	id: number
 	clone(): TrainingContext;
 }
 
 export const trainingContext = (color: Color): TrainingContext => {
 	return {
 		trainable: color == "white",
+		id: -1,
 		clone() {
 			const clonedCtx: TrainingContext = { 
 				...this,
@@ -31,11 +33,15 @@ export const initializeSubrepertoire = (
 	color: Color
 ): Node<TrainingData> => {
 	const context = trainingContext(color);
+	let test = 0;
 	return transform(root, context, (context, data) => {
 		context.trainable = !context.trainable;
+		context.id++;
+		test++;
 		return {
 			...data,
 			training: {
+				id: test,
 				disabled: context.trainable,
 				seen: false,
 				group: -1,
@@ -47,6 +53,7 @@ export const initializeSubrepertoire = (
 
 export interface TrainingData extends PgnNodeData {
 	training: {
+		id: number
 		disabled: boolean;
 		seen: boolean;
 		group: number;
