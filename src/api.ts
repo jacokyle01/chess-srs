@@ -13,7 +13,7 @@ import {
 export interface Api {
 	addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
 	load(k: number): void; //begin training kth subrepertoire
-	guess(san: string): TrainingOutcome; //guess the move this path is trying to train
+	guess(san: string): TrainingOutcome | null; //guess the move this path is trying to train
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
 	setMethod(method: Method): void; //set training method. learn or recall
 	state(): State; //get the state of this instance
@@ -44,7 +44,7 @@ export function start(state: State): Api {
 		},
 
 		setTime: (time: number) => {
-			if (state.time == time) {
+			if (state.time != time) {
 				state.time = time;
 				return true;
 			}
@@ -157,11 +157,37 @@ export function start(state: State): Api {
 			return state.path;
 		},
 		guess: (san: string) => {
-			if (!state.path || state.method == "learn") return;
-			console.log(state.path.at(-1)?.data.san);
-			if (san == state.path.at(-1)?.data.san) {
-				return "success";
+			console.log("guessing " + san);
+			if (!state.path || state.method == "learn") return null;
+			let candidates: ChildNode<TrainingData>[] = [];
+			console.log("guessing #2");
+			if (state.path.length == 1) {
+				state.subrepertoire.moves.children.forEach(child => candidates.push(child));
 			}
+			else {
+				console.log("\n\t\tchildren");
+				state.path.at(-2).children.forEach(child => candidates.push(child));
+			}
+			console.log("\n\t\tcandidates\n");
+			candidates.forEach(candidate => console.log(candidate.data));
+
+			let moves: string[] = [];
+			moves = candidates.map(candidate => candidate.data.san);
+
+			if (moves.includes(san)) {
+				if (state.path.at(-1).data.san == san) //exact match
+				{
+					return "success";
+				}
+				else {
+					return "alternate";
+				}
+			}
+			else {
+				return "failure";
+			}
+
+
 		},
 		succeed: () => {
 			let node = state?.path?.at(-1);
