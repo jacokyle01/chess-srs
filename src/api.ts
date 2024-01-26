@@ -73,14 +73,15 @@ export function start(state: State): Api {
 			state.path = null;
 		},
 		next: () => {
-			//TODO refactor -more clear logic, dont use recursion
-			//we need to follow the ordering & only consider nodes that are trainable in our context
+			// //TODO refactor -more clear logic, dont use recursion
+
 			let queue = state.queue;
-			let flag = false;
-			//we have reached the end of the tree/first start
+			let first = true; //flag for whether or not this dequeued element is the first
+			let flag = false; //record whether or not we've done a complete exploration of the opening tree
+
+			//initialize queue if empty
 			if (queue.length == 0) {
 				flag = true;
-				//add all subrepertoire moves
 				for (const child of state.subrepertoire.moves.children) {
 					const queueEntry: QueueEntry = {
 						path: [child],
@@ -92,9 +93,21 @@ export function start(state: State): Api {
 
 			let path: ChildNode<TrainingData>[];
 			let parent: ChildNode<TrainingData>;
+			let id = -1;
+
 			while (queue.length > 0) {
 				const entry: QueueEntry = queue.shift();
 				parent = entry.path?.at(-1);
+				if (first) {
+					id = parent.data.training.id;
+					first = false;
+				} else {
+					//handle loop around
+					if (parent.data.training.id == id) {
+						return false;
+					}
+				}
+
 				for (const child of parent.children) {
 					const queueEntry: QueueEntry = {
 						path: [...entry.path, child],
@@ -102,6 +115,7 @@ export function start(state: State): Api {
 					};
 					queue.push(queueEntry);
 				}
+
 				if (!parent.data.training.disabled) {
 					switch (state.method) {
 						case "recall": //recall if due
@@ -118,12 +132,22 @@ export function start(state: State): Api {
 							break;
 					}
 				}
+
+				if (queue.length == 0) {
+					if (flag) {
+						return false;
+					} else {
+						flag = true;
+						for (const child of state.subrepertoire.moves.children) {
+							const queueEntry: QueueEntry = {
+								path: [child],
+								layer: 0,
+							};
+							queue.push(queueEntry);
+						}
+					}
+				}
 			}
-			if (!flag) {
-				return this.next(); //if we didnt start from an empty queue, search again from start
-			}
-			this.path = null;
-			return false;
 		},
 		load: (k: number) => {
 			state.subrepertoire = state.repertoire[k];
