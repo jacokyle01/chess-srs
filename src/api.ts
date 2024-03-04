@@ -13,11 +13,11 @@ import {
 export interface Api {
 	addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
 	load(k: number): void; //begin training kth subrepertoire
-	guess(san: string): TrainingOutcome | null; //guess the move this path is trying to train
+	guess(san: string): TrainingOutcome | undefined; //guess the move this path is trying to train //TODO instead null?
 	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
 	setMethod(method: Method): void; //set training method. learn or recall
 	state(): State; //get the state of this instance
-	next(): boolean; //advance trainer to next path. returns whether or not there was another trainable path
+	next(): boolean | undefined; //advance trainer to next path. returns whether or not there was another trainable path, undefined if no subrepertoire.
 	path(): ChildNode<TrainingData>[] | null; //get the current path
 	succeed(): void; //handle training success based on context
 	fail(): void; //handle training fail based on context
@@ -50,20 +50,6 @@ export function start(state: State): Api {
 			}
 			return false;
 		},
-		// setRepertoire: (pgn: string) => {
-		// 	const games = parsePgn(pgn);
-		// 	const annotated: Game<TrainingData>[] = [];
-		// 	for (const game of games) {
-		// 		game.moves = initializeTraining(game.moves);
-		// 		const annotatedGame = {
-		// 			...game,
-		// 			moves: initializeTraining(game.moves),
-		// 		};
-		// 		annotated.push(annotatedGame);
-		// 	}
-		// 	state.repertoire = annotated;
-		// 	return true; //dont validate yet
-		// },
 		state: () => {
 			return state;
 		},
@@ -74,7 +60,7 @@ export function start(state: State): Api {
 		},
 		next: () => {
 			// //TODO refactor -more clear logic, dont use recursion
-
+			if (!state.subrepertoire) return undefined;
 			let queue = state.queue;
 			let first = true; //flag for whether or not this dequeued element is the first
 			let flag = false; //record whether or not we've done a complete exploration of the opening tree
@@ -96,8 +82,17 @@ export function start(state: State): Api {
 			let id = -1;
 
 			while (queue.length > 0) {
-				const entry: QueueEntry = queue.shift();
-				parent = entry.path?.at(-1);
+				const maybeEntry: QueueEntry | undefined = queue.shift();
+				if (!maybeEntry) {
+					return;
+				}
+				const entry: QueueEntry = maybeEntry;
+				const maybeParent: ChildNode<TrainingData> | undefined =
+					entry.path.at(-1);
+				if (!maybeParent) {
+					return;
+				}
+				parent = maybeParent;
 				if (first) {
 					id = parent.data.training.id;
 					first = false;
@@ -157,37 +152,35 @@ export function start(state: State): Api {
 			return state.path;
 		},
 		guess: (san: string) => {
+			if (!state.subrepertoire) return;
 			console.log("guessing " + san);
-			if (!state.path || state.method == "learn") return null;
+			if (!state.path || state.method == "learn") return undefined;
 			let candidates: ChildNode<TrainingData>[] = [];
 			console.log("guessing #2");
 			if (state.path.length == 1) {
-				state.subrepertoire.moves.children.forEach(child => candidates.push(child));
-			}
-			else {
+				state.subrepertoire.moves.children.forEach((child) =>
+					candidates.push(child)
+				);
+			} else {
 				console.log("\n\t\tchildren");
-				state.path.at(-2).children.forEach(child => candidates.push(child));
+				state.path.at(-2)?.children.forEach((child) => candidates.push(child));
 			}
 			console.log("\n\t\tcandidates\n");
-			candidates.forEach(candidate => console.log(candidate.data));
+			candidates.forEach((candidate) => console.log(candidate.data));
 
 			let moves: string[] = [];
-			moves = candidates.map(candidate => candidate.data.san);
+			moves = candidates.map((candidate) => candidate.data.san);
 
 			if (moves.includes(san)) {
-				if (state.path.at(-1).data.san == san) //exact match
-				{
+				if (state.path.at(-1)?.data.san == san) {
+					//exact match
 					return "success";
-				}
-				else {
+				} else {
 					return "alternate";
 				}
-			}
-			else {
+			} else {
 				return "failure";
 			}
-
-
 		},
 		succeed: () => {
 			let node = state?.path?.at(-1);
