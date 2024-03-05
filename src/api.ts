@@ -14,14 +14,13 @@ export interface Api {
 	addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
 	load(k: number): void; //begin training kth subrepertoire
 	guess(san: string): TrainingOutcome | undefined; //guess the move this path is trying to train //TODO instead null?
-	setTime(time: number): boolean; //set time of state. boolean: whether or not this new time is different
+	update(time?: number): boolean; //set time of state, or set time to now. boolean: whether or not this new time is different
 	setMethod(method: Method): void; //set training method. learn or recall
 	state(): State; //get the state of this instance
 	next(): boolean | undefined; //advance trainer to next path. returns whether or not there was another trainable path, undefined if no subrepertoire.
 	path(): ChildNode<TrainingData>[] | null; //get the current path
 	succeed(): void; //handle training success based on context
 	fail(): void; //handle training fail based on context
-	update(): void; //set current time
 }
 
 export function start(state: State): Api {
@@ -43,12 +42,13 @@ export function start(state: State): Api {
 			return true;
 		},
 
-		setTime: (time: number) => {
-			if (state.time != time) {
-				state.time = time;
-				return true;
+		update: (time?: number) => {
+			let newTime = (time || Math.floor(Date.now() / 1000));
+			if (state.time = newTime) {
+				return false;
 			}
-			return false;
+			state.time = newTime;
+			return true;
 		},
 		state: () => {
 			return state;
@@ -206,9 +206,6 @@ export function start(state: State): Api {
 					node.data.training.group = 0;
 					break;
 			}
-		},
-		update: () => {
-			state.time = Math.round(Date.now() / 1000);
 		},
 		fail: () => {
 			let node = state?.path?.at(-1);
