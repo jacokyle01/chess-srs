@@ -7,6 +7,10 @@
     "watch": "node .build/watch.js",
     "dev": "node dist/main.js"
   },
+  "files": [
+    "/src/*.ts",
+    "/dist/*.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jacokyle01/chess-srs.git"
