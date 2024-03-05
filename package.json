@@ -1,8 +1,8 @@
 {
   "name": "chess-srs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library to train chess openings with spaced repetition",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "watch": "node .build/watch.js",
     "dev": "node dist/main.js"
