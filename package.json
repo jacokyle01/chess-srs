@@ -1,9 +1,10 @@
 {
 	"name": "chess-srs",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Library to train chess openings with spaced repetition",
 	"main": "dist/main.js",
 	"scripts": {
+		"compile": "tsc --sourceMap --declaration",
 		"watch": "node .build/watch.js",
 		"dev": "node dist/main.js",
 		"bundle": "esbuild src/chessSrs.ts --bundle --format=esm --outfile=dist/chessSrs.js"
