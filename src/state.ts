@@ -1,5 +1,5 @@
-import { PgnNodeData, Node, Game, ChildNode } from "chessops/pgn";
-import { Method, QueueEntry, TrainingData } from "./util";
+import { PgnNodeData, Node, Game, ChildNode } from "chessops/pgn.js";
+import { Method, QueueEntry, TrainingData } from "./util.js";
 
 export interface State {
     currentNode: Node<TrainingData> | null;

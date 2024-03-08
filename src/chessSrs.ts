@@ -1,6 +1,6 @@
-import { Api, start } from "./api";
-import { Config, configure } from "./config";
-import { State, defaults } from "./state";
+import { Api, start } from "./api.js";
+import { Config, configure } from "./config.js";
+import { State, defaults } from "./state.js";
 
 export function ChessSrs(config?: Config): Api {
 	const state = defaults();

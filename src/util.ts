@@ -1,5 +1,5 @@
-import { Game, transform } from "chessops/pgn";
-import { PgnNodeData, Node, ChildNode, walk } from "chessops/pgn";
+import { Game, transform } from "chessops/pgn.js";
+import { PgnNodeData, Node, ChildNode, walk } from "chessops/pgn.js";
 
 interface TrainingContext {
 	// trainAs: Color,

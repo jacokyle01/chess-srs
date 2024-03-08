@@ -1,5 +1,5 @@
-import { Game, PgnNodeData, parsePgn, Node, ChildNode } from "chessops/pgn";
-import { State } from "./state";
+import { Game, PgnNodeData, parsePgn, Node, ChildNode } from "chessops/pgn.js";
+import { State } from "./state.js";
 import {
 	Color,
 	Method,
@@ -8,7 +8,7 @@ import {
 	TrainingOutcome,
 	initializeSubrepertoire,
 	initializeTraining,
-} from "./util";
+} from "./util.js";
 
 export interface Api {
 	addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
@@ -43,8 +43,8 @@ export function start(state: State): Api {
 		},
 
 		update: (time?: number) => {
-			let newTime = (time || Math.floor(Date.now() / 1000));
-			if (state.time = newTime) {
+			let newTime = time || Math.floor(Date.now() / 1000);
+			if ((state.time = newTime)) {
 				return false;
 			}
 			state.time = newTime;
