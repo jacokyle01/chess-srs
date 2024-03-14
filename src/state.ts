@@ -1,4 +1,4 @@
-import { PgnNodeData, Node, Game, ChildNode } from "chessops/pgn.js";
+import { Node, Game, ChildNode } from "chessops/pgn.js";
 import { Method, QueueEntry, TrainingData } from "./util.js";
 
 export interface State {

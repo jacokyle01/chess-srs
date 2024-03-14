@@ -1,5 +1,5 @@
-import { Game, transform } from "chessops/pgn.js";
-import { PgnNodeData, Node, ChildNode, walk } from "chessops/pgn.js";
+import { transform } from "chessops/pgn.js";
+import { PgnNodeData, Node, ChildNode} from "chessops/pgn.js";
 
 interface TrainingContext {
 	// trainAs: Color,
@@ -83,7 +83,7 @@ const context: Context = {
 	},
 };
 
-const markUnseen = (ctx: Context, data) => {
+const markUnseen = (ctx: Context, data: PgnNodeData) => {
 	return {
 		...data,
 		training: {
@@ -150,9 +150,9 @@ export const annotateWithPaths = (node: Node<PgnNodeData>) => {
 // 	}
 // }
 
-const checker = (data) => {
-	return data.training.group == "unseen";
-};
+// const checker = (data: ChildNode<TrainingData>) => {
+// 	return data.training.group == "unseen";
+// };
 
 //get nodes such that f(node) = true
 // export const getNodesAsList = (head: Node<TrainingData>): Node<TrainingData>[] => {
@@ -175,7 +175,7 @@ export const printPath = (path: ChildNode<TrainingData>[]): void => {
 	console.log(string);
 };
 
-export function wait(ms) {
+export function wait(ms: number) {
 	var start = Date.now(),
 		now = start;
 	while (now - start < ms) {

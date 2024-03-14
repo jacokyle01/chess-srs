@@ -1,4 +1,4 @@
-import { Game, PgnNodeData, parsePgn, Node, ChildNode } from "chessops/pgn.js";
+import { parsePgn, ChildNode } from "chessops/pgn.js";
 import { State } from "./state.js";
 import {
 	Color,
@@ -7,7 +7,6 @@ import {
 	TrainingData,
 	TrainingOutcome,
 	initializeSubrepertoire,
-	initializeTraining,
 } from "./util.js";
 
 export interface Api {
@@ -17,7 +16,7 @@ export interface Api {
 	update(time?: number): boolean; //set time of state, or set time to now. boolean: whether or not this new time is different
 	setMethod(method: Method): void; //set training method. learn or recall
 	state(): State; //get the state of this instance
-	next(): boolean | undefined; //advance trainer to next path. returns whether or not there was another trainable path, undefined if no subrepertoire.
+	next(): boolean | null; //advance trainer to next path. returns whether or not there was another trainable path, undefined if no subrepertoire.
 	path(): ChildNode<TrainingData>[] | null; //get the current path
 	succeed(): void; //handle training success based on context
 	fail(): void; //handle training fail based on context
@@ -60,7 +59,7 @@ export function start(state: State): Api {
 		},
 		next: () => {
 			// //TODO refactor -more clear logic, dont use recursion
-			if (!state.subrepertoire) return undefined;
+			if (!state.subrepertoire) return false;
 			let queue = state.queue;
 			let first = true; //flag for whether or not this dequeued element is the first
 			let flag = false; //record whether or not we've done a complete exploration of the opening tree
@@ -77,20 +76,20 @@ export function start(state: State): Api {
 				}
 			}
 
-			let path: ChildNode<TrainingData>[];
+			// let path: ChildNode<TrainingData>[];
 			let parent: ChildNode<TrainingData>;
 			let id = -1;
 
 			while (queue.length > 0) {
 				const maybeEntry: QueueEntry | undefined = queue.shift();
 				if (!maybeEntry) {
-					return;
+					return null;
 				}
 				const entry: QueueEntry = maybeEntry;
 				const maybeParent: ChildNode<TrainingData> | undefined =
 					entry.path.at(-1);
 				if (!maybeParent) {
-					return;
+					return null;
 				}
 				parent = maybeParent;
 				if (first) {
@@ -143,6 +142,7 @@ export function start(state: State): Api {
 					}
 				}
 			}
+			return null;
 		},
 		load: (k: number) => {
 			state.subrepertoire = state.repertoire[k];
