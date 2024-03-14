@@ -1,13 +1,14 @@
 import { parsePgn, ChildNode } from "chessops/pgn.js";
 import { State } from "./state.js";
+import { initializeSubrepertoire } from "./util.js";
+
 import {
 	Color,
 	Method,
 	QueueEntry,
 	TrainingData,
 	TrainingOutcome,
-	initializeSubrepertoire,
-} from "./util.js";
+} from "./types.js";
 
 export interface Api {
 	addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
