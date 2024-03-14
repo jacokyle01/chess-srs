@@ -6,8 +6,6 @@
 	"main": "dist/chessSrs.js",
 	"scripts": {
 		"compile": "tsc --sourceMap --declaration",
-		"watch": "node .build/watch.js",
-		"dev": "node dist/main.js",
 		"bundle": "esbuild src/chessSrs.ts --bundle --format=esm --outfile=dist/chessSrs.js",
 		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
 	},
@@ -27,8 +25,8 @@
 		"chess-openings",
 		"typescript"
 	],
-	"author": "",
-	"license": "ISC",
+	"author": "jacokyle",
+	"license": "GPL-3.0-or-later",
 	"bugs": {
 		"url": "https://github.com/jacokyle01/chess-srs/issues"
 	},
@@ -47,18 +45,18 @@
 	"jest": {
 		"testRegex": ".*\\.test\\.ts$",
 		"transform": {
-		  "\\.ts$": [
-			"ts-jest",
-			{
-			  "useESM": true
-			}
-		  ]
+			"\\.ts$": [
+				"ts-jest",
+				{
+					"useESM": true
+				}
+			]
 		},
 		"extensionsToTreatAsEsm": [
-		  ".ts"
+			".ts"
 		],
 		"moduleNameMapper": {
-		  "^(.*)\\.js$": "$1"
+			"^(.*)\\.js$": "$1"
 		}
-	  }
+	}
 }
