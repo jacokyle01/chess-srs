@@ -153,20 +153,15 @@ export function start(state: State): Api {
 		},
 		guess: (san: string) => {
 			if (!state.subrepertoire) return;
-			console.log("guessing " + san);
 			if (!state.path || state.method == "learn") return undefined;
 			let candidates: ChildNode<TrainingData>[] = [];
-			console.log("guessing #2");
 			if (state.path.length == 1) {
 				state.subrepertoire.moves.children.forEach((child) =>
 					candidates.push(child)
 				);
 			} else {
-				console.log("\n\t\tchildren");
 				state.path.at(-2)?.children.forEach((child) => candidates.push(child));
 			}
-			console.log("\n\t\tcandidates\n");
-			candidates.forEach((candidate) => console.log(candidate.data));
 
 			let moves: string[] = [];
 			moves = candidates.map((candidate) => candidate.data.san);
