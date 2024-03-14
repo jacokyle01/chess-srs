@@ -67,4 +67,17 @@ test("recall", () => {
 	expect(chessSrs.path()?.at(-1)?.data.san).toEqual("d4");
 	expect(chessSrs.guess("d4")).toEqual("success");
 	expect(chessSrs.guess("f6")).toEqual("failure");
+	chessSrs.succeed();
+
+	while (chessSrs.next()) {
+		chessSrs.succeed();
+		expect(chessSrs.path()?.at(-1)?.data.training.group).toEqual(1);
+		//allow 10 seconds of execution time
+		expect(chessSrs.path()?.at(-1)?.data.training.dueAt).toBeGreaterThan(
+			chessSrs.state().time + 990
+		);
+		expect(chessSrs.path()?.at(-1)?.data.training.dueAt).not.toBeGreaterThan(
+			chessSrs.state().time + 1010
+		);
+	}
 });
