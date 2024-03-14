@@ -1,6 +1,6 @@
 {
 	"name": "chess-srs",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"type": "module",
 	"description": "Library to train chess openings with spaced repetition",
 	"main": "dist/chessSrs.js",
