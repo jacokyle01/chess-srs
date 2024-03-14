@@ -1,19 +1,19 @@
 {
-  "compilerOptions": {
-    "strict": true,
-    "strictPropertyInitialization": false,
-    "noEmitOnError": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "moduleResolution": "node",
-    "target": "ES2018",
-    "lib": ["ES2018"],
-    "module": "esnext",
-    "esModuleInterop": true,
-    "outDir": "dist/esm",
-    "declaration": true,
-    "sourceMap": true
-  },
-  "include": ["src"]
+	"compilerOptions": {
+		"strict": true,
+		"strictPropertyInitialization": false,
+		"noEmitOnError": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"moduleResolution": "node",
+		"target": "ES2018",
+		"lib": ["ES2018"],
+		"module": "esnext",
+		"esModuleInterop": true,
+		"outDir": "dist",
+		"declaration": true,
+		"sourceMap": true
+	},
+	"include": ["src"],
 }
