@@ -9,7 +9,7 @@
 		"watch": "node .build/watch.js",
 		"dev": "node dist/main.js",
 		"bundle": "esbuild src/chessSrs.ts --bundle --format=esm --outfile=dist/chessSrs.js",
-		"test": "jest"
+		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
 	},
 	"files": [
 		"/src/*.ts",
