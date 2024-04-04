@@ -59,8 +59,8 @@ export function start(state: State): Api {
 			state.path = null;
 		},
 		next: () => {
-			// //TODO refactor -more clear logic, dont use recursion
-			if (!state.subrepertoire) return false;
+			let index = state.index;
+			if (index == -1) return false;
 			let queue = state.queue;
 			let first = true; //flag for whether or not this dequeued element is the first
 			let flag = false; //record whether or not we've done a complete exploration of the opening tree
@@ -68,7 +68,7 @@ export function start(state: State): Api {
 			//initialize queue if empty
 			if (queue.length == 0) {
 				flag = true;
-				for (const child of state.subrepertoire.moves.children) {
+				for (const child of state.repertoire[index].moves.children) {
 					const queueEntry: QueueEntry = {
 						path: [child],
 						layer: 0,
@@ -77,7 +77,6 @@ export function start(state: State): Api {
 				}
 			}
 
-			// let path: ChildNode<TrainingData>[];
 			let parent: ChildNode<TrainingData>;
 			let id = -1;
 
@@ -133,7 +132,7 @@ export function start(state: State): Api {
 						return false;
 					} else {
 						flag = true;
-						for (const child of state.subrepertoire.moves.children) {
+						for (const child of state.repertoire[index].moves.children) {
 							const queueEntry: QueueEntry = {
 								path: [child],
 								layer: 0,
@@ -146,18 +145,23 @@ export function start(state: State): Api {
 			return null;
 		},
 		load: (k: number) => {
-			state.subrepertoire = state.repertoire[k];
+			if (k >= state.repertoire.length) {
+				throw new Error(
+					`Index ${k} is out of bounds for repertoire of size ${state.repertoire.length}`
+				);
+			}
+			state.index = k;
 		},
 		path: () => {
-			// return state.path;
 			return state.path;
 		},
 		guess: (san: string) => {
-			if (!state.subrepertoire) return;
+			const index = state.index;
+			if (index == -1) return;
 			if (!state.path || state.method == "learn") return undefined;
 			let candidates: ChildNode<TrainingData>[] = [];
 			if (state.path.length == 1) {
-				state.subrepertoire.moves.children.forEach((child) =>
+				state.repertoire[index].moves.children.forEach((child) =>
 					candidates.push(child)
 				);
 			} else {

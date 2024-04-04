@@ -63,6 +63,7 @@ test("recall", () => {
 	chessSrs.setMethod("recall");
 	chessSrs.update(getNow() + 110);
 	chessSrs.next();
+	console.log(chessSrs.state())
 	expect(chessSrs.path()?.at(-1)?.data.training.group).toEqual(0);
 	expect(chessSrs.path()?.at(-1)?.data.san).toEqual("d4");
 	expect(chessSrs.guess("d4")).toEqual("success");
