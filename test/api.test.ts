@@ -1,3 +1,13 @@
+/*
+  ~~~ Basic tests ~~~ 
+
+  -expected API usage 
+  -default configuration 
+  -initialization
+  -subrepertoire meta
+
+*/
+
 import { expect, test } from '@jest/globals';
 import { ChessSrs } from '../src/chessSrs.js';
 
@@ -10,6 +20,9 @@ import { ChessSrs } from '../src/chessSrs.js';
 const chessSrs = ChessSrs({ buckets: [100, 1000, 10000] });
 const getNow = (): number => {
   return Math.floor(Date.now() / 1000);
+};
+const countUnseen = (nodes: number, buckets: number[]): number => {
+  return nodes - buckets.reduce((x, y) => x + y, 0);
 };
 
 chessSrs.addSubrepertoires(
@@ -27,7 +40,19 @@ test('not null', () => {
   expect(chessSrs.path()).not.toBeNull();
 });
 
-test('initialized correctly', () => {
+test('meta initialization', () => {
+  expect(chessSrs.state().repertoire[0].meta.trainAs).toBe('white');
+  expect(chessSrs.state().repertoire[0].meta.nodeCount).toBe(8);
+  expect(chessSrs.state().repertoire[0].meta.bucketEntries).toEqual([0, 0, 0]);
+});
+
+test('count unseen', () => {
+  const bucketEntries = chessSrs.state().repertoire[0].meta.bucketEntries;
+  const allNodes = chessSrs.state().repertoire[0].meta.nodeCount;
+  expect(countUnseen(allNodes, bucketEntries)).toBe(8);
+});
+
+test('succeed on moves', () => {
   expect(chessSrs.path()?.at(-1)?.data.san).toEqual('d4');
   chessSrs.succeed();
   chessSrs.next();
@@ -41,10 +66,15 @@ test('initialized correctly', () => {
   chessSrs.succeed();
 });
 
-test('meta initialization', () => {
-  expect(chessSrs.state().repertoire[0].meta.trainAs).toBe('white');
-  expect(chessSrs.state().repertoire[0].meta.nodeCount).toBe(16);
-  expect(chessSrs.state().repertoire[0].meta.bucketEntries).toEqual([0, 0, 0]);
+test('test unseen', () => {
+  const bucketEntries = chessSrs.state().repertoire[0].meta.bucketEntries;
+  const allNodes = chessSrs.state().repertoire[0].meta.nodeCount;
+  expect(countUnseen(allNodes, bucketEntries)).toBe(5);
+});
+
+test('bucket entries', () => {
+  const bucketEntries = chessSrs.state().repertoire[0].meta.bucketEntries;
+  expect(bucketEntries).toEqual([3, 0, 0]);
 });
 
 test('succeeds correctly', () => {
@@ -59,13 +89,20 @@ test('succeeds correctly', () => {
   }
 });
 
+test('all nodes should be seen', () => {
+  const bucketEntries = chessSrs.state().repertoire[0].meta.bucketEntries;
+  const allNodes = chessSrs.state().repertoire[0].meta.nodeCount;
+  expect(countUnseen(allNodes, bucketEntries)).toBe(0);
+});
+
 test('recall', () => {
   chessSrs.setMethod('recall');
   chessSrs.update(getNow() + 110);
   chessSrs.next();
-  console.log(chessSrs.state());
   expect(chessSrs.path()?.at(-1)?.data.training.group).toEqual(0);
   expect(chessSrs.path()?.at(-1)?.data.san).toEqual('d4');
+
+  //test guessing
   expect(chessSrs.guess('d4')).toEqual('success');
   expect(chessSrs.guess('f6')).toEqual('failure');
   chessSrs.succeed();

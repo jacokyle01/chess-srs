@@ -3,7 +3,6 @@ import { State } from './state.js';
 import { generateSubrepertoire } from './util.js';
 
 import { Color, Method, QueueEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
-
 export interface Api {
   addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
   load(k: number): void; //begin training kth subrepertoire
@@ -190,6 +189,7 @@ export function start(state: State): Api {
           node.data.training.seen = true;
           node.data.training.dueAt = state.time + state.buckets[0];
           node.data.training.group = 0;
+          state.repertoire[state.index].meta.bucketEntries[0]++; //globally, mark node as seen
           break;
       }
     },
