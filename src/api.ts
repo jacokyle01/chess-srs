@@ -1,8 +1,8 @@
-import { parsePgn, ChildNode } from 'chessops/pgn.js';
+import { parsePgn, ChildNode, Game, PgnNodeData } from 'chessops/pgn.js';
 import { State } from './state.js';
 import { initializeSubrepertoire } from './util.js';
 
-import { Color, Method, QueueEntry, TrainingData, TrainingOutcome } from './types.js';
+import { Color, Method, QueueEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
 
 export interface Api {
   addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
@@ -20,16 +20,16 @@ export interface Api {
 export function start(state: State): Api {
   return {
     addSubrepertoires: (pgn: string, color: Color) => {
-      const subreps = parsePgn(pgn);
+      const subreps: Game<PgnNodeData>[] = parsePgn(pgn);
       for (const subrep of subreps) {
         //augment subrepertoire with a) color to train as, and b) training data
-        const annotatedSubrep = {
+        const annotatedSubrep: Subrepertoire<TrainingData> = {
           ...subrep,
           headers: {
             ...subrep.headers,
-            TrainAs: color,
+            // TrainAs: color,
           },
-          moves: initializeSubrepertoire(subrep.moves, color),
+          ...initializeSubrepertoire(subrep.moves, color, state.buckets),
         };
         state.repertoire.push(annotatedSubrep);
       }

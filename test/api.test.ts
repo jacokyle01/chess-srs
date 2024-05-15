@@ -39,9 +39,14 @@ test("initialized correctly", () => {
 	expect(chessSrs.path()?.at(-1)?.data.training.group).toEqual(-1);
 	expect(chessSrs.path()?.at(-1)?.data.training.seen).toEqual(false);
 	chessSrs.succeed();
-	// chessSrs.succeed();
-	// expect(chessSrs.path()?.at(-1)?.data.training.group).toEqual(0);
 });
+
+test("meta initialization", () => {
+	expect(chessSrs.state().repertoire[0].meta.trainAs).toBe('white');
+	expect(chessSrs.state().repertoire[0].meta.nodeCount).toBe(16);
+	expect(chessSrs.state().repertoire[0].meta.bucketEntries).toEqual([0, 0, 0]);
+
+})
 
 test("succeeds correctly", () => {
 	while (chessSrs.next()) {
