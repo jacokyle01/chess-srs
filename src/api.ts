@@ -1,6 +1,6 @@
 import { parsePgn, ChildNode, Game, PgnNodeData } from 'chessops/pgn.js';
 import { State } from './state.js';
-import { initializeSubrepertoire } from './util.js';
+import { generateSubrepertoire } from './util.js';
 
 import { Color, Method, QueueEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
 
@@ -29,7 +29,7 @@ export function start(state: State): Api {
             ...subrep.headers,
             // TrainAs: color,
           },
-          ...initializeSubrepertoire(subrep.moves, color, state.buckets),
+          ...generateSubrepertoire(subrep.moves, color, state.buckets),
         };
         state.repertoire.push(annotatedSubrep);
       }

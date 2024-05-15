@@ -19,7 +19,7 @@ export const trainingContext = (color: Color): TrainingContext => {
 //a) marks moves made by our color as "trainable"
 //b) disables training of moves made by opposite color
 
-export const initializeSubrepertoire = (
+export const generateSubrepertoire = (
   root: Node<PgnNodeData>,
   color: Color,
 	buckets: number[]
