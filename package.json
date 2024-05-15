@@ -1,62 +1,66 @@
 {
-	"name": "chess-srs",
-	"version": "1.0.7",
-	"type": "module",
-	"description": "Library to train chess openings with spaced repetition",
-	"main": "dist/chessSrs.js",
-	"scripts": {
-		"compile": "tsc --sourceMap --declaration",
-		"bundle": "esbuild src/chessSrs.ts --bundle --format=esm --outfile=dist/chessSrs.js",
-		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
-	},
-	"files": [
-		"/src/*.ts",
-		"/dist/*.js",
-		"/dist/*.d.ts",
-		"/dist/*.js.map"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/jacokyle01/chess-srs.git"
-	},
-	"keywords": [
-		"chess",
-		"spaced-repetition",
-		"chess-openings",
-		"typescript"
-	],
-	"author": "jacokyle",
-	"license": "GPL-3.0-or-later",
-	"bugs": {
-		"url": "https://github.com/jacokyle01/chess-srs/issues"
-	},
-	"homepage": "https://github.com/jacokyle01/chess-srs#readme",
-	"dependencies": {
-		"chessops": "^0.13.0"
-	},
-	"devDependencies": {
-		"@jest/globals": "^29.7.0",
-		"@types/node": "^20.10.5",
-		"esbuild": "^0.19.10",
-		"jest": "^29.7.0",
-		"ts-jest": "^29.1.2",
-		"typescript": "^5.3.3"
-	},
-	"jest": {
-		"testRegex": ".*\\.test\\.ts$",
-		"transform": {
-			"\\.ts$": [
-				"ts-jest",
-				{
-					"useESM": true
-				}
-			]
-		},
-		"extensionsToTreatAsEsm": [
-			".ts"
-		],
-		"moduleNameMapper": {
-			"^(.*)\\.js$": "$1"
-		}
-	}
+  "name": "chess-srs",
+  "version": "1.0.7",
+  "type": "module",
+  "description": "Library to train chess openings with spaced repetition",
+  "main": "dist/chessSrs.js",
+  "exports": {
+    ".": "./dist/chessSrs.js",
+    "./*": "./dist/*.js"
+  },
+  "scripts": {
+    "compile": "tsc --sourceMap --declaration",
+    "bundle": "esbuild src/chessSrs.ts --bundle --format=esm --outfile=dist/chessSrs.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "files": [
+    "/src/*.ts",
+    "/dist/*.js",
+    "/dist/*.d.ts",
+    "/dist/*.js.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacokyle01/chess-srs.git"
+  },
+  "keywords": [
+    "chess",
+    "spaced-repetition",
+    "chess-openings",
+    "typescript"
+  ],
+  "author": "jacokyle",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/jacokyle01/chess-srs/issues"
+  },
+  "homepage": "https://github.com/jacokyle01/chess-srs#readme",
+  "dependencies": {
+    "chessops": "^0.13.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/node": "^20.10.5",
+    "esbuild": "^0.19.10",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
+  },
+  "jest": {
+    "testRegex": ".*\\.test\\.ts$",
+    "transform": {
+      "\\.ts$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
+    },
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
+    "moduleNameMapper": {
+      "^(.*)\\.js$": "$1"
+    }
+  }
 }
