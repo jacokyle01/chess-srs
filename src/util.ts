@@ -33,11 +33,13 @@ export const generateSubrepertoire = (
 } => {
   const context = trainingContext(color);
   let idCount = 0;
+  let trainableNodes = 0;
   return {
     moves: transform(root, context, (context, data) => {
       context.trainable = !context.trainable;
       context.id++;
       idCount++;
+      if (context.trainable) trainableNodes++;
       return {
         ...data,
         training: {
@@ -51,7 +53,7 @@ export const generateSubrepertoire = (
     }),
     meta: {
       trainAs: color,
-      nodeCount: idCount,
+      nodeCount: trainableNodes,
       bucketEntries: buckets.map(() => 0),
     },
   };
