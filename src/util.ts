@@ -22,14 +22,14 @@ export const trainingContext = (color: Color): TrainingContext => {
 export const generateSubrepertoire = (
   root: Node<PgnNodeData>,
   color: Color,
-	buckets: number[]
+  buckets: number[]
 ): {
   moves: Node<TrainingData>;
-	meta: {
-		trainAs: Color;
+  meta: {
+    trainAs: Color;
     nodeCount: number;
     bucketEntries: number[];
-	}
+  };
 } => {
   const context = trainingContext(color);
   let idCount = 0;
@@ -49,11 +49,11 @@ export const generateSubrepertoire = (
         },
       };
     }),
-		meta: {
-			trainAs: color,
-			nodeCount: idCount,
-			bucketEntries: buckets.map(() => 0)
-		}
+    meta: {
+      trainAs: color,
+      nodeCount: idCount,
+      bucketEntries: buckets.map(() => 0),
+    },
   };
 };
 

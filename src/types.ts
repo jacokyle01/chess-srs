@@ -27,8 +27,8 @@ export interface Subrepertoire<T> extends Game<T> {
     trainAs: Color;
     nodeCount: number;
     bucketEntries: number[];
-		//all unseen nodes can be derived from:
-		//nodeCount - sum(bucketEntries)
+    //all unseen nodes can be derived from:
+    //nodeCount - sum(bucketEntries)
   };
 }
 
