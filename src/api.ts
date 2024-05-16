@@ -3,7 +3,6 @@ import { State } from './state.js';
 import { generateSubrepertoire } from './util.js';
 
 import { Color, Method, DequeEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
-import { exploreBfs } from './next.js';
 export interface Api {
   addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
   load(k: number): void; //begin training kth subrepertoire
@@ -54,12 +53,51 @@ export function start(state: State): Api {
       state.path = null;
     },
     next: () => {
-      switch (state.recall.by) {
-        case 'depth':
-          return exploreBfs(state);
-        case 'breadth':
-          return false;
+      if (state.index == -1) return false; // no subrepertoire selected
+      //initialization
+      let deque: DequeEntry[] = [];
+      let subrep = state.repertoire[state.index];
+      //initialize deque
+      for (const child of subrep.moves.children) {
+        deque.push({
+          path: [child],
+          layer: 0,
+        });
       }
+      while (deque.length != 0) {
+        //initialize dedequed path
+        //TODO change
+        const entry = state.recall.by == 'breadth' ? deque.shift()! : deque.pop()!;
+        const pos = entry.path.at(-1)!;
+
+        //test if match
+        if (!pos.data.training.disabled) {
+          switch (state.method) {
+            case 'recall': //recall if due
+              if (pos.data.training.dueAt <= state.time) {
+                state.path = entry.path;
+                return true;
+              }
+              break;
+            case 'learn': //learn if unseen
+              if (!pos.data.training.seen) {
+                state.path = entry.path;
+                return true;
+              }
+              break;
+          }
+        }
+
+        //push child nodes
+        for (const child of pos.children) {
+          const DequeEntry: DequeEntry = {
+            path: [...entry.path, child],
+            layer: ++entry.layer,
+          };
+          deque.push(DequeEntry);
+        }
+      }
+      return false;
     },
     load: (k: number) => {
       if (k >= state.repertoire.length) {
