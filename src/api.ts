@@ -9,7 +9,7 @@ export interface Api {
   guess(san: string): TrainingOutcome | undefined; //guess the move this path is trying to train //TODO instead null?
   update(time?: number): boolean; //set time of state, or set time to now. boolean: whether or not this new time is different
   setMethod(method: Method): void; //set training method. learn or recall
-  state(): State; //get the state of this instance
+  state: State; //get the state of this instance
   // next(): boolean | null; //advance trainer to next path. returns whether or not there was another trainable path, undefined if no subrepertoire.
   next(): boolean; //try to advance path to next trainable path, return whether or not this was possible.
   path(): ChildNode<TrainingData>[] | null; //get the current trainable path
@@ -44,9 +44,9 @@ export function start(state: State): Api {
       state.time = newTime;
       return true;
     },
-    state: () => {
-      return state;
-    },
+
+    state,
+
     setMethod: (method: Method) => {
       state.method = method;
       state.path = null;
@@ -135,7 +135,7 @@ export function start(state: State): Api {
       }
     },
     succeed: () => {
-      let node = state?.path?.at(-1);
+      let node = state.path?.at(-1);
       if (!node) return;
       switch (state.method) {
         case 'recall':
@@ -158,7 +158,7 @@ export function start(state: State): Api {
       }
     },
     fail: () => {
-      let node = state?.path?.at(-1);
+      let node = state.path?.at(-1);
       if (!node) return;
       switch (state.method) {
         case 'recall':

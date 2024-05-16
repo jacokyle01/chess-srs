@@ -42,14 +42,14 @@ test('not null', () => {
 });
 
 test('meta initialization', () => {
-  expect(chessSrs.state().repertoire[0].meta.trainAs).toBe('white');
-  expect(chessSrs.state().repertoire[0].meta.nodeCount).toBe(8);
-  expect(chessSrs.state().repertoire[0].meta.bucketEntries).toEqual([0, 0, 0]);
+  expect(chessSrs.state.repertoire[0].meta.trainAs).toBe('white');
+  expect(chessSrs.state.repertoire[0].meta.nodeCount).toBe(8);
+  expect(chessSrs.state.repertoire[0].meta.bucketEntries).toEqual([0, 0, 0]);
 });
 
 test('count unseen', () => {
-  const bucketEntries = chessSrs.state().repertoire[0].meta.bucketEntries;
-  const allNodes = chessSrs.state().repertoire[0].meta.nodeCount;
+  const bucketEntries = chessSrs.state.repertoire[0].meta.bucketEntries;
+  const allNodes = chessSrs.state.repertoire[0].meta.nodeCount;
   expect(countUnseen(allNodes, bucketEntries)).toBe(8);
 });
 
@@ -69,13 +69,13 @@ test('succeed on moves', () => {
 });
 
 test('test unseen', () => {
-  const bucketEntries = chessSrs.state().repertoire[0].meta.bucketEntries;
-  const allNodes = chessSrs.state().repertoire[0].meta.nodeCount;
+  const bucketEntries = chessSrs.state.repertoire[0].meta.bucketEntries;
+  const allNodes = chessSrs.state.repertoire[0].meta.nodeCount;
   expect(countUnseen(allNodes, bucketEntries)).toBe(5);
 });
 
 test('bucket entries', () => {
-  const bucketEntries = chessSrs.state().repertoire[0].meta.bucketEntries;
+  const bucketEntries = chessSrs.state.repertoire[0].meta.bucketEntries;
   expect(bucketEntries).toEqual([3, 0, 0]);
 });
 
@@ -92,8 +92,8 @@ test('succeeds correctly', () => {
 });
 
 test('all nodes should be seen', () => {
-  const bucketEntries = chessSrs.state().repertoire[0].meta.bucketEntries;
-  const allNodes = chessSrs.state().repertoire[0].meta.nodeCount;
+  const bucketEntries = chessSrs.state.repertoire[0].meta.bucketEntries;
+  const allNodes = chessSrs.state.repertoire[0].meta.nodeCount;
   expect(countUnseen(allNodes, bucketEntries)).toBe(0);
 });
 
@@ -113,7 +113,7 @@ test('recall', () => {
     chessSrs.succeed();
     expect(chessSrs.path()?.at(-1)?.data.training.group).toEqual(1);
     //allow 10 seconds of execution time
-    expect(chessSrs.path()?.at(-1)?.data.training.dueAt).toBeGreaterThan(chessSrs.state().time + 990);
-    expect(chessSrs.path()?.at(-1)?.data.training.dueAt).not.toBeGreaterThan(chessSrs.state().time + 1010);
+    expect(chessSrs.path()?.at(-1)?.data.training.dueAt).toBeGreaterThan(chessSrs.state.time + 990);
+    expect(chessSrs.path()?.at(-1)?.data.training.dueAt).not.toBeGreaterThan(chessSrs.state.time + 1010);
   }
 });
