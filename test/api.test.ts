@@ -25,6 +25,7 @@ const countUnseen = (nodes: number, buckets: number[]): number => {
   return nodes - buckets.reduce((x, y) => x + y, 0);
 };
 
+
 chessSrs.addSubrepertoires(
   '1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. g3 Be7 5. Bg2 O-O 6. O-O dxc4 7. Qc2 a5 8. Qxc4 b6',
   'white'
@@ -56,6 +57,7 @@ test('succeed on moves', () => {
   expect(chessSrs.path()?.at(-1)?.data.san).toEqual('d4');
   chessSrs.succeed();
   chessSrs.next();
+
   expect(chessSrs.path()?.at(-1)?.data.san).toEqual('c4');
   chessSrs.succeed();
   chessSrs.next();

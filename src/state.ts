@@ -1,5 +1,5 @@
 import { Node, Game, ChildNode } from 'chessops/pgn.js';
-import { Method, QueueEntry, Subrepertoire, TrainingData } from './types.js';
+import { Method, Path, QueueEntry, Subrepertoire, TrainingData } from './types.js';
 
 export interface State {
   currentNode: Node<TrainingData> | null;
@@ -17,7 +17,7 @@ export interface State {
   buckets: number[]; //the "spaces" for spaced repetition. see "leitner system"
   promotion: 'most' | 'next'; //on recall success, //TODO most
   demotion: 'most' | 'next';
-  path: ChildNode<TrainingData>[] | null; //current path we are training
+  path: Path | null; //current path we are training
   repertoire: Subrepertoire<TrainingData>[];
   index: number; // which subrepertoire are we training
   time: number;

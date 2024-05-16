@@ -32,8 +32,10 @@ export interface Subrepertoire<T> extends Game<T> {
   };
 }
 
+export type Path = ChildNode<TrainingData>[];
+
 export interface QueueEntry {
-  path: ChildNode<TrainingData>[];
+  path: Path;
   layer: number;
 }
 

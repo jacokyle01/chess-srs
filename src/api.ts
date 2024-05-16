@@ -3,6 +3,7 @@ import { State } from './state.js';
 import { generateSubrepertoire } from './util.js';
 
 import { Color, Method, QueueEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
+import { exploreDfs } from './next.js';
 export interface Api {
   addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
   load(k: number): void; //begin training kth subrepertoire
@@ -11,8 +12,8 @@ export interface Api {
   setMethod(method: Method): void; //set training method. learn or recall
   state(): State; //get the state of this instance
   // next(): boolean | null; //advance trainer to next path. returns whether or not there was another trainable path, undefined if no subrepertoire.
-  next(): ChildNode<TrainingData>[] | null; //if possible, get next trainable path, else return empty
-  path(): ChildNode<TrainingData>[] | null; //get the current path
+  next(): boolean; //try to advance path to next trainable path, return whether or not this was possible.
+  path(): ChildNode<TrainingData>[] | null; //get the current trainable path
   succeed(): void; //handle training success based on context
   fail(): void; //handle training fail based on context
 }
@@ -53,52 +54,12 @@ export function start(state: State): Api {
       state.path = null;
     },
     next: () => {
-      if (state.index == -1) return null; // no subrepertoire selected
-      //initialization
-      let queue: QueueEntry[] = [];
-      let subrep = state.repertoire[state.index];
-      //initialize queue
-      for (const child of subrep.moves.children) {
-        queue.push({
-          path: [child],
-          layer: 0,
-        });
+      switch (state.recall.by) {
+        case 'depth':
+          return exploreDfs(state);
+        case 'breadth':
+          return false;
       }
-      while (queue.length != 0) {
-        //initialize dequeued path
-        const entry = queue.shift()!;
-        const pos = entry.path.at(-1)!;
-
-        //test if match
-        if (!pos.data.training.disabled) {
-          switch (state.method) {
-            case 'recall': //recall if due
-              if (pos.data.training.dueAt <= state.time) {
-                state.path = entry.path;
-                // return true;
-                return entry.path;
-              }
-              break;
-            case 'learn': //learn if unseen
-              if (!pos.data.training.seen) {
-                state.path = entry.path;
-                // return true;
-                return entry.path;
-              }
-              break;
-          }
-        }
-
-        //enqueue child nodes
-        for (const child of pos.children) {
-          const queueEntry: QueueEntry = {
-            path: [...entry.path, child],
-            layer: ++entry.layer,
-          };
-          queue.push(queueEntry);
-        }
-      }
-      return null;
     },
     load: (k: number) => {
       if (k >= state.repertoire.length) {
