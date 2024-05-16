@@ -15,7 +15,7 @@ export interface Api {
   //begin training kth subrepertoire
   load(k: number): void;
 
-  //guess the move this path is trying to train //TODO instead null?
+  //guess the move this path is trying to train
   guess(san: string): TrainingOutcome | undefined;
 
   //set time of state, or set time to now.
@@ -56,7 +56,6 @@ export function start(state: State): Api {
           ...subrep,
           headers: {
             ...subrep.headers,
-            // TrainAs: color,
           },
           ...generateSubrepertoire(subrep.moves, color, state.buckets),
         };
@@ -94,7 +93,6 @@ export function start(state: State): Api {
       }
       while (deque.length != 0) {
         //initialize dedequed path
-        //TODO change
         const entry = state.getNext.by == 'breadth' ? deque.shift()! : deque.pop()!;
         const pos = entry.path.at(-1)!;
 
