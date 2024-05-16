@@ -2,7 +2,6 @@ import { Node, Game, ChildNode } from 'chessops/pgn.js';
 import { Method, Path, DequeEntry, Subrepertoire, TrainingData } from './types.js';
 
 export interface State {
-  currentNode: Node<TrainingData> | null;
   method: Method; //recall or learn
   getNext: {
     by: 'depth' | 'breadth'; // exploration strategy to find next position
@@ -19,7 +18,6 @@ export interface State {
 
 export function defaults(): State {
   return {
-    currentNode: null,
     method: 'learn',
     getNext: {
       by: 'breadth',
