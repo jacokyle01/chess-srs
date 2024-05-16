@@ -49,7 +49,6 @@ export function start(state: State): Api {
     },
     setMethod: (method: Method) => {
       state.method = method;
-      state.deque = [];
       state.path = null;
     },
     next: () => {
@@ -67,7 +66,7 @@ export function start(state: State): Api {
       while (deque.length != 0) {
         //initialize dedequed path
         //TODO change
-        const entry = state.recall.by == 'breadth' ? deque.shift()! : deque.pop()!;
+        const entry = state.getNext.by == 'breadth' ? deque.shift()! : deque.pop()!;
         const pos = entry.path.at(-1)!;
 
         //test if match
@@ -89,7 +88,7 @@ export function start(state: State): Api {
         }
 
         //push child nodes
-        if (entry.layer < state.recall.max) {
+        if (entry.layer < state.getNext.max) {
           for (const child of pos.children) {
             const DequeEntry: DequeEntry = {
               path: [...entry.path, child],
