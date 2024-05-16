@@ -4,17 +4,38 @@ import { generateSubrepertoire } from './util.js';
 
 import { Color, Method, DequeEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
 export interface Api {
-  addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
-  load(k: number): void; //begin training kth subrepertoire
-  guess(san: string): TrainingOutcome | undefined; //guess the move this path is trying to train //TODO instead null?
-  update(time?: number): boolean; //set time of state, or set time to now. boolean: whether or not this new time is different
-  setMethod(method: Method): void; //set training method. learn or recall
-  state: State; //get the state of this instance
-  // next(): boolean | null; //advance trainer to next path. returns whether or not there was another trainable path, undefined if no subrepertoire.
-  next(): boolean; //try to advance path to next trainable path, return whether or not this was possible.
-  path(): ChildNode<TrainingData>[] | null; //get the current trainable path
-  succeed(): void; //handle training success based on context
-  fail(): void; //handle training fail based on context
+  //add new subrepertoires to repertoire.
+  //pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
+  addSubrepertoires(pgn: string, color: Color): boolean;
+
+  //begin training kth subrepertoire
+  load(k: number): void;
+
+  //guess the move this path is trying to train //TODO instead null?
+  guess(san: string): TrainingOutcome | undefined;
+
+  //set time of state, or set time to now. 
+  //returns boolean: whether or not this new time is different
+  update(time?: number): boolean;
+
+  //set training method. learn or recall
+  setMethod(method: Method): void;
+
+  //get the state of this instance
+  state: State;
+
+  //try to advance path to next trainable path, 
+  //return whether or not this was possible.
+  next(): boolean;
+
+  //get the current trainable path
+  path(): ChildNode<TrainingData>[] | null;
+
+  //handle training success based on context
+  succeed(): void;
+
+  //handle training fail based on context
+  fail(): void;
 }
 
 export function start(state: State): Api {
