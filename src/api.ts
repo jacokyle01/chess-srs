@@ -3,7 +3,11 @@ import { State } from './state.js';
 import { generateSubrepertoire } from './util.js';
 
 import { Color, Method, DequeEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
+import { Config, configure } from './config.js';
 export interface Api {
+  // reconfigure the instance. accepts all config options except buckets
+  set(config: Config): void;
+
   //add new subrepertoires to repertoire.
   //pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
   addSubrepertoires(pgn: string, color: Color): boolean;
@@ -14,7 +18,7 @@ export interface Api {
   //guess the move this path is trying to train //TODO instead null?
   guess(san: string): TrainingOutcome | undefined;
 
-  //set time of state, or set time to now. 
+  //set time of state, or set time to now.
   //returns boolean: whether or not this new time is different
   update(time?: number): boolean;
 
@@ -24,7 +28,7 @@ export interface Api {
   //get the state of this instance
   state: State;
 
-  //try to advance path to next trainable path, 
+  //try to advance path to next trainable path,
   //return whether or not this was possible.
   next(): boolean;
 
@@ -40,6 +44,10 @@ export interface Api {
 
 export function start(state: State): Api {
   return {
+    set(config): void {
+      configure(state, config);
+    },
+
     addSubrepertoires: (pgn: string, color: Color) => {
       const subreps: Game<PgnNodeData>[] = parsePgn(pgn);
       for (const subrep of subreps) {
