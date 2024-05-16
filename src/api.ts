@@ -164,41 +164,65 @@ export function start(state: State): Api {
       }
     },
     succeed: () => {
-      let node = state.path?.at(-1);
+      const node = state.path?.at(-1);
+      const subrep = state.repertoire[state.index];
       if (!node) return;
       switch (state.method) {
         case 'recall':
+          let groupIndex = node.data.training.group;
+          subrep.meta.bucketEntries[groupIndex]--;
           switch (state.promotion) {
             case 'most':
+              groupIndex = state.buckets.length - 1;
               break;
             case 'next':
-              node.data.training.group = Math.min(node.data.training.group + 1, state.buckets.length - 1);
-              const space = state.buckets[node.data.training.group];
-              node.data.training.dueAt = state.time + space;
+              groupIndex = Math.min(groupIndex + 1, state.buckets.length - 1);
               break;
           }
+          subrep.meta.bucketEntries[groupIndex]++;
+          const interval = state.buckets[groupIndex];
+
+          node.data.training = {
+            ...node.data.training,
+            group: groupIndex,
+            dueAt: state.time + interval,
+          };
           break;
         case 'learn':
-          node.data.training.seen = true;
-          node.data.training.dueAt = state.time + state.buckets[0];
-          node.data.training.group = 0;
-          state.repertoire[state.index].meta.bucketEntries[0]++; //globally, mark node as seen
+          node.data.training = {
+            ...node.data.training,
+            seen: true,
+            dueAt: state.time + state.buckets[0],
+            group: 0,
+          };
+          subrep.meta.bucketEntries[0]++; //globally, mark node as seen
           break;
       }
     },
     fail: () => {
       let node = state.path?.at(-1);
+      const subrep = state.repertoire[state.index];
       if (!node) return;
+      let groupIndex = node.data.training.group;
+      subrep.meta.bucketEntries[groupIndex]--;
       switch (state.method) {
         case 'recall':
           switch (state.demotion) {
             case 'most':
+              groupIndex = 0;
               break;
             case 'next':
-              node.data.training.group = Math.max(node.data.training.group - 1, 0);
-              const space = state.buckets[node.data.training.group];
-              node.data.training.dueAt = state.time + space;
+              groupIndex = Math.max(groupIndex - 1, 0);
+              break;
           }
+          subrep.meta.bucketEntries[groupIndex]++;
+          const interval = state.buckets[groupIndex];
+
+          node.data.training = {
+            ...node.data.training,
+            group: groupIndex,
+            dueAt: state.time + interval,
+          };
         case 'learn':
           break; //can't fail learning
       }
