@@ -89,12 +89,14 @@ export function start(state: State): Api {
         }
 
         //push child nodes
-        for (const child of pos.children) {
-          const DequeEntry: DequeEntry = {
-            path: [...entry.path, child],
-            layer: ++entry.layer,
-          };
-          deque.push(DequeEntry);
+        if (entry.layer < state.recall.max) {
+          for (const child of pos.children) {
+            const DequeEntry: DequeEntry = {
+              path: [...entry.path, child],
+              layer: ++entry.layer,
+            };
+            deque.push(DequeEntry);
+          }
         }
       }
       return false;
