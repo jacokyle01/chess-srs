@@ -1,21 +1,21 @@
 import { State } from "./state";
-import { QueueEntry } from "./types";
+import { DequeEntry } from "./types";
 
-export const exploreDfs = (state: State): boolean => {
+export const exploreBfs = (state: State): boolean => {
   if (state.index == -1) return false; // no subrepertoire selected
       //initialization
-      let queue: QueueEntry[] = [];
+      let deque: DequeEntry[] = [];
       let subrep = state.repertoire[state.index];
-      //initialize queue
+      //initialize deque
       for (const child of subrep.moves.children) {
-        queue.push({
+        deque.push({
           path: [child],
           layer: 0,
         });
       }
-      while (queue.length != 0) {
-        //initialize dequeued path
-        const entry = queue.shift()!;
+      while (deque.length != 0) {
+        //initialize dedequed path
+        const entry = deque.shift()!;
         const pos = entry.path.at(-1)!;
 
         //test if match
@@ -36,14 +36,18 @@ export const exploreDfs = (state: State): boolean => {
           }
         }
 
-        //enqueue child nodes
+        //endeque child nodes
         for (const child of pos.children) {
-          const queueEntry: QueueEntry = {
+          const DequeEntry: DequeEntry = {
             path: [...entry.path, child],
             layer: ++entry.layer,
           };
-          queue.push(queueEntry);
+          deque.push(DequeEntry);
         }
       }
       return false;
+}
+
+export const exploreDfs = (state: State): boolean => {
+  return false;
 }

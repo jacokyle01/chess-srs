@@ -2,8 +2,8 @@ import { parsePgn, ChildNode, Game, PgnNodeData } from 'chessops/pgn.js';
 import { State } from './state.js';
 import { generateSubrepertoire } from './util.js';
 
-import { Color, Method, QueueEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
-import { exploreDfs } from './next.js';
+import { Color, Method, DequeEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
+import { exploreBfs } from './next.js';
 export interface Api {
   addSubrepertoires(pgn: string, color: Color): boolean; //add new subrepertoires to repertoire. pgn is parsed as normal, then repertoire is augmented w/ new subrepertoires.
   load(k: number): void; //begin training kth subrepertoire
@@ -50,13 +50,13 @@ export function start(state: State): Api {
     },
     setMethod: (method: Method) => {
       state.method = method;
-      state.queue = [];
+      state.deque = [];
       state.path = null;
     },
     next: () => {
       switch (state.recall.by) {
         case 'depth':
-          return exploreDfs(state);
+          return exploreBfs(state);
         case 'breadth':
           return false;
       }

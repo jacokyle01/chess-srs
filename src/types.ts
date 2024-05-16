@@ -34,7 +34,7 @@ export interface Subrepertoire<T> extends Game<T> {
 
 export type Path = ChildNode<TrainingData>[];
 
-export interface QueueEntry {
+export interface DequeEntry {
   path: Path;
   layer: number;
 }

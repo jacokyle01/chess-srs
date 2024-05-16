@@ -1,9 +1,10 @@
 import { Node, Game, ChildNode } from 'chessops/pgn.js';
-import { Method, Path, QueueEntry, Subrepertoire, TrainingData } from './types.js';
+import { Method, Path, DequeEntry, Subrepertoire, TrainingData } from './types.js';
 
 export interface State {
   currentNode: Node<TrainingData> | null;
   method: Method; //recall or learn
+  //TODO only 1 by, max 
   learn: {
     //when variation is unsee
     by: 'depth' | 'breadth'; //how we find the next variation
@@ -21,7 +22,7 @@ export interface State {
   repertoire: Subrepertoire<TrainingData>[];
   index: number; // which subrepertoire are we training
   time: number;
-  queue: QueueEntry[]; //a list of paths
+  deque: DequeEntry[]; //a list of paths //TODO remove 
 }
 
 export function defaults(): State {
@@ -43,6 +44,6 @@ export function defaults(): State {
     repertoire: [],
     index: -1,
     time: Math.round(Date.now() / 1000),
-    queue: [],
+    deque: [],
   };
 }
