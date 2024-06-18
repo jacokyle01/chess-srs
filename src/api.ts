@@ -152,8 +152,7 @@ export function start(state: State): Api {
     },
     guess: (san: string) => {
       const index = state.index;
-      if (index == -1) return;
-      if (!state.path || state.method == 'learn') return undefined;
+      if (index == -1 || !state.path || state.method == 'learn') return;
       let candidates: ChildNode<TrainingData>[] = [];
       if (state.path.length == 1) {
         state.repertoire[index].moves.children.forEach(child => candidates.push(child));
@@ -164,16 +163,11 @@ export function start(state: State): Api {
       let moves: string[] = [];
       moves = candidates.map(candidate => candidate.data.san);
 
-      if (moves.includes(san)) {
-        if (state.path.at(-1)?.data.san == san) {
-          //exact match
-          return 'success';
-        } else {
-          return 'alternate';
-        }
-      } else {
-        return 'failure';
-      }
+      return moves.includes(san)
+        ? state.path.at(-1)?.data.san === san
+          ? 'success'
+          : 'alternate'
+        : 'failure';
     },
     succeed: () => {
       const node = state.path?.at(-1);
