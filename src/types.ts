@@ -47,3 +47,8 @@ export interface PathContext {
   path: string;
   clone(): PathContext;
 }
+
+export interface CountDueContext {
+  count: number
+  clone(): CountDueContext;
+}

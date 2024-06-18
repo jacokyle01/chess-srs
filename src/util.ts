@@ -1,6 +1,6 @@
 import { transform } from 'chessops/pgn.js';
 import { PgnNodeData, Node, ChildNode } from 'chessops/pgn.js';
-import { Color, Context, PathContext, TrainingContext, TrainingData } from './types';
+import { Color, Context, CountDueContext, PathContext, TrainingContext, TrainingData } from './types';
 
 export const trainingContext = (color: Color): TrainingContext => {
   return {
@@ -8,6 +8,18 @@ export const trainingContext = (color: Color): TrainingContext => {
     id: -1,
     clone() {
       const clonedCtx: TrainingContext = {
+        ...this,
+      };
+      return clonedCtx;
+    },
+  };
+};
+
+export const countDueContext = (count: number): CountDueContext => {
+  return {
+    count,
+    clone() {
+      const clonedCtx: CountDueContext = {
         ...this,
       };
       return clonedCtx;

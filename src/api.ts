@@ -1,8 +1,16 @@
-import { parsePgn, ChildNode, Game, PgnNodeData } from 'chessops/pgn.js';
+import { parsePgn, ChildNode, Game, PgnNodeData, walk } from 'chessops/pgn.js';
 import { State } from './state.js';
-import { generateSubrepertoire } from './util.js';
+import { countDueContext, generateSubrepertoire } from './util.js';
 
-import { Color, Method, DequeEntry, Subrepertoire, TrainingData, TrainingOutcome } from './types.js';
+import {
+  Color,
+  Method,
+  DequeEntry,
+  Subrepertoire,
+  TrainingData,
+  TrainingOutcome,
+  CountDueContext,
+} from './types.js';
 import { Config, configure } from './config.js';
 export interface Api {
   // reconfigure the instance. accepts all config options except buckets
@@ -40,6 +48,12 @@ export interface Api {
 
   //handle training fail based on context
   fail(): void;
+
+  //count nodes that are due for training
+  countDue(): number;
+
+  //shortcut to get current subrepertoire
+  current(): Subrepertoire<TrainingData>;
 }
 
 export function start(state: State): Api {
@@ -224,6 +238,20 @@ export function start(state: State): Api {
         case 'learn':
           break; //can't fail learning
       }
+    },
+    countDue: () => {
+      const current = state.repertoire[state.index];
+      const root = current.moves;
+      let count = 0;
+      const ctx = countDueContext(0);
+      walk(root, ctx, (ctx, data) => {
+        ctx.count += !data.training.disabled && data.training.dueAt < state.time ? 1 : 0;
+      });
+      return ctx.count;
+    },
+
+    current: () => {
+      return state.repertoire[state.index];
     },
   };
 }
