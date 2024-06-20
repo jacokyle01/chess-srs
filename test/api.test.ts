@@ -25,7 +25,6 @@ const countUnseen = (nodes: number, buckets: number[]): number => {
   return nodes - buckets.reduce((x, y) => x + y, 0);
 };
 
-
 chessSrs.addSubrepertoires(
   '1. d4 d5 2. c4 e6 3. Nf3 Nf6 4. g3 Be7 5. Bg2 O-O 6. O-O dxc4 7. Qc2 a5 8. Qxc4 b6',
   'white'
@@ -36,6 +35,10 @@ chessSrs.addSubrepertoires(
 );
 chessSrs.load(0);
 chessSrs.next();
+
+test('test', () => {
+  expect(chessSrs.countDue()).toBe(0);
+});
 
 test('not null', () => {
   expect(chessSrs.path()).not.toBeNull();
@@ -59,6 +62,9 @@ test('succeed on moves', () => {
   chessSrs.next();
 
   expect(chessSrs.path()?.at(-1)?.data.san).toEqual('c4');
+  expect(chessSrs.path()?.at(-1)?.data.fen).toEqual(
+    'rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2'
+  );
   chessSrs.succeed();
   chessSrs.next();
   expect(chessSrs.path()?.at(-1)?.data.san).toEqual('Nf3');
@@ -100,6 +106,7 @@ test('all nodes should be seen', () => {
 test('recall', () => {
   chessSrs.setMethod('recall');
   chessSrs.update(getNow() + 110);
+  expect(chessSrs.countDue()).toBe(8);
   chessSrs.next();
   expect(chessSrs.path()?.at(-1)?.data.training.group).toEqual(0);
   expect(chessSrs.path()?.at(-1)?.data.san).toEqual('d4');

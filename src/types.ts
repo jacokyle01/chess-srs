@@ -1,3 +1,4 @@
+import { Position } from 'chessops';
 import { ChildNode, Game, PgnNodeData } from 'chessops/pgn';
 
 export type Color = 'white' | 'black';
@@ -8,6 +9,7 @@ export type TrainingOutcome = 'success' | 'alternate' | 'failure';
 export interface TrainingContext {
   trainable: boolean;
   id: number;
+  pos: Position
   clone(): TrainingContext;
 }
 
@@ -20,6 +22,7 @@ export interface TrainingData extends PgnNodeData {
     dueAt: number;
     //TODO fen?
   };
+  fen: string
 }
 
 export interface Subrepertoire<T> extends Game<T> {

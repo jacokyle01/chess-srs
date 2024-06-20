@@ -1,14 +1,19 @@
-import { transform } from 'chessops/pgn.js';
+import { startingPosition, transform } from 'chessops/pgn.js';
 import { PgnNodeData, Node, ChildNode } from 'chessops/pgn.js';
 import { Color, Context, CountDueContext, PathContext, TrainingContext, TrainingData } from './types';
+import { defaultPosition } from 'chessops/variant';
+import { makeSanAndPlay, parseSan } from 'chessops/san';
+import { makeFen } from 'chessops/fen';
 
 export const trainingContext = (color: Color): TrainingContext => {
   return {
     trainable: color == 'white',
     id: -1,
+    pos: defaultPosition('chess'),
     clone() {
       const clonedCtx: TrainingContext = {
         ...this,
+        pos: this.pos.clone(),
       };
       return clonedCtx;
     },
@@ -46,14 +51,24 @@ export const generateSubrepertoire = (
   const context = trainingContext(color);
   let idCount = 0;
   let trainableNodes = 0;
+
   return {
     moves: transform(root, context, (context, data) => {
+      const move = parseSan(context.pos, data.san);
+      // assume the move is playable
+      context.pos.play(move!);
+
       context.trainable = !context.trainable;
       context.id++;
       idCount++;
-      if (context.trainable) trainableNodes++;
+
+      if (context.trainable) {
+        trainableNodes++;
+      }
+
       return {
         ...data,
+        fen: makeFen(context.pos.toSetup()),
         training: {
           id: idCount,
           disabled: context.trainable,
@@ -69,28 +84,6 @@ export const generateSubrepertoire = (
       bucketEntries: buckets.map(() => 0),
     },
   };
-};
-
-const context: Context = {
-  clone() {
-    const clonedCtx: Context = { ...this };
-    return clonedCtx;
-  },
-};
-
-const markUnseen = (ctx: Context, data: PgnNodeData) => {
-  return {
-    ...data,
-    training: {
-      seen: false,
-      group: -1,
-      dueAt: Infinity,
-    },
-  };
-};
-
-export const initializeTraining = (head: Node<PgnNodeData>) => {
-  return transform(head, context, markUnseen);
 };
 
 export const pathContext: PathContext = {

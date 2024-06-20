@@ -48,7 +48,7 @@ test('fail: next', () => {
   chessSrs.next();
   chessSrs.fail();
   expect(chessSrs.state.repertoire[INDEX].meta.bucketEntries).toEqual([1, 1, 3]);
-})
+});
 
 test('fail: most', () => {
   chessSrs.update(getNow() + 10000000);
@@ -59,4 +59,4 @@ test('fail: most', () => {
     chessSrs.fail();
   }
   expect(chessSrs.state.repertoire[INDEX].meta.bucketEntries).toEqual([5, 0, 0]);
-})
+});
